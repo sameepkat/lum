@@ -54,6 +54,10 @@ namespace lum{
         return tokens.back();
     }
 
+    void Parser::skipNewLines(){
+        while(match(TokenType::NewLine));
+    }
+
     std::unique_ptr<Stmt> Parser::parseDeclaration(){
         if(match(TokenType::Fn)){
             return parseFunctionDeclaration();
@@ -82,6 +86,7 @@ namespace lum{
         auto block = std::make_unique<BlockStmt>();
 
         while(!check(TokenType::RightBrace) && !isTokEOF()){
+            skipNewLines();
             auto decl = parseDeclaration();
             if(decl) block->statements.push_back(std::move(decl));
             else advanceToken();
@@ -108,6 +113,19 @@ namespace lum{
         auto s = std::make_unique<ExpressionStmt>();
         s->expression = std::move(expr);
 
+        if(match(TokenType::NewLine)){
+            while(match(TokenType::NewLine)){}
+        }else if(!(check(TokenType::RightBrace) || isTokEOF())){
+            lum::Error::throw_err("expected newline after statement", previousToken().line, previousToken().column);
+
+            while(!check(TokenType::NewLine) && !check(TokenType::RightBrace) && !isTokEOF()){
+                advanceToken();
+            }
+            if(match(TokenType::NewLine)){
+                while(match(TokenType::NewLine)){}
+            }
+        }
+
         return s;
     }
 
@@ -125,6 +143,7 @@ namespace lum{
 
             while(!check(TokenType::RightParen) && !isTokEOF()){
                 call->arguments.push_back(parseExpression());
+                skipNewLines();
                 if(!match(TokenType::Comma)) break;
             }
             consume(TokenType::RightParen, "Expect ')' after arguments.");
@@ -171,6 +190,7 @@ namespace lum{
        std::unique_ptr<Program> program = std::make_unique<Program>();
 
        while(!isTokEOF()){
+           skipNewLines();
            auto decl = parseDeclaration();
             if(decl) program->statements.push_back(std::move(decl));
             else{

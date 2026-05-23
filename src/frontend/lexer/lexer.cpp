@@ -148,11 +148,13 @@ namespace lum{
             case '<':
                 addToken(match('=') ? TokenType::LessEqual : TokenType::Less);
                 break;
+            case '\n':
+                addToken(TokenType::NewLine);
+                break;
 
             case ' ':
             case '\r':
             case '\t':
-            case '\n':
                 break;
             case '"':
                 string();

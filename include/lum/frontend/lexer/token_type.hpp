@@ -48,6 +48,7 @@ namespace lum{
 
         // Special
         EndOfFile,
-        Use
+        Use,
+        NewLine
     };
 }

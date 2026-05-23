@@ -29,6 +29,7 @@ namespace lum{
             bool check(TokenType type) const;
             bool match(TokenType type);
             const Token& consume(TokenType type, const char* message);
+            void skipNewLines();
 
 
             // Grammar-level methods
