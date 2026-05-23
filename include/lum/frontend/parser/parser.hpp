@@ -26,22 +26,21 @@ namespace lum{
             bool isTokEOF() const;
 
             const Token& previousToken() const;
-            bool check(TokenType const) const;
+            bool check(TokenType type) const;
             bool match(TokenType type);
             const Token& consume(TokenType type, const char* message);
 
 
             // Grammar-level methods
-            std::unique_ptr<Stmt> declaration();
-            std::unique_ptr<FunctionStmt> functionDeclaration();
+            std::unique_ptr<Stmt> parseDeclaration();
+            std::unique_ptr<FunctionStmt> parseFunctionDeclaration();
+            std::unique_ptr<BlockStmt> parseBlock();
+            std::unique_ptr<Stmt> parseStatement();
+            std::unique_ptr<ExpressionStmt> parseExpressionStmt();
 
-            std::unique_ptr<BlockStmt> block();
-            std::unique_ptr<Stmt> statement();
-            std::unique_ptr<ExpressionStmt> expressionStmt();
-
-            std::unique_ptr<Expr> expression();
-            std::unique_ptr<Expr> call();
-            std::unique_ptr<Expr> primary();
+            std::unique_ptr<Expr> parseExpression();
+            std::unique_ptr<Expr> parseCall();
+            std::unique_ptr<Expr> parsePrimary();
 
     };
 }

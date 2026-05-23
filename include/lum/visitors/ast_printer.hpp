@@ -6,7 +6,7 @@
 #include "lum/frontend/ast/stmt_visitor.hpp"
 
 namespace lum{
-    class ASTPrinter: public ExprVisitor, StmtVisitor{
+    class ASTPrinter: public ExprVisitor, public StmtVisitor{
         public:
             void print(Program& program);
 
@@ -33,5 +33,8 @@ namespace lum{
             void visitIfStmt(IfStmt& stmt) override;
 
             void visitWhileStmt(WhileStmt& stmt) override;
+        private:
+            int indent = 0;
+            void printIndent();
     };
 }
