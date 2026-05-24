@@ -1,0 +1,5 @@
+namespace lum{
+    class NativeFunction{
+
+    };
+}
