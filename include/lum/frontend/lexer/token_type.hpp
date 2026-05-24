@@ -27,6 +27,10 @@ namespace lum{
         Less,
         LessEqual,
 
+        // Logical
+        LogicalOR,
+        LogicalAND,
+
         // Pipeline
         Arrow, // ->
 

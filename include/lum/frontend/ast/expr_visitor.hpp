@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lum/frontend/ast/expr.hpp"
 namespace lum{
     class LiteralExpr;
     class VariableExpr;
@@ -18,6 +19,7 @@ namespace lum{
         virtual void visitUnaryExpr(UnaryExpr& expr) = 0;
         virtual void visitCallExpr(CallExpr& expr) = 0;
         virtual void visitAssignExpr(AssignExpr& expr) = 0;
+        virtual void visitLogicalExpr(LogicalExpr& expr) = 0;
     };
 
 }

@@ -10,7 +10,7 @@ namespace lum{
    Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)){}
 
    const Token& Parser::peekToken() const{
-        if(currentTokenIndex < tokens.size())
+        if(static_cast<unsigned long>(currentTokenIndex) < tokens.size())
             return tokens[currentTokenIndex];
         else
             return tokens.back();
@@ -48,7 +48,7 @@ namespace lum{
         return false;
     }
 
-    const Token& Parser::consume(TokenType type, const char* message){
+    const Token& Parser::consume(TokenType type, std::string message){
         if(check(type)) return  advanceToken();
         lum::Error::throw_err(message, peekToken().line, peekToken().column);
         return tokens.back();
@@ -63,6 +63,21 @@ namespace lum{
             return parseFunctionDeclaration();
         }
         return parseStatement();
+    }
+
+    void Parser::finishStatement(std::string err_msg){
+        if(match(TokenType::NewLine)){
+            skipNewLines();
+        }else if(!(check(TokenType::RightBrace) || isTokEOF())){
+            lum::Error::throw_err(err_msg, previousToken().line, previousToken().column);
+
+            while(!check(TokenType::NewLine) && !check(TokenType::RightBrace) && !isTokEOF()){
+                advanceToken();
+            }
+            if(match(TokenType::NewLine)){
+                skipNewLines();
+            }
+        }
     }
 
     std::unique_ptr<FunctionStmt> Parser::parseFunctionDeclaration(){
@@ -87,6 +102,7 @@ namespace lum{
 
         while(!check(TokenType::RightBrace) && !isTokEOF()){
             skipNewLines();
+            if(isTokEOF()) break;
             auto decl = parseDeclaration();
             if(decl) block->statements.push_back(std::move(decl));
             else advanceToken();
@@ -97,8 +113,9 @@ namespace lum{
     }
 
     std::unique_ptr<Stmt> Parser::parseStatement(){
-        // if(match(TokenType::Return)) return parseReturn();
-        // if(match(TokenType::If)) return parseIf();
+        if(match(TokenType::Return)) return parseReturn();
+        if(match(TokenType::If)) return parseIf();
+        if(match(TokenType::While)) return parseWhile();
         if(match(TokenType::LeftBrace)){
             auto block = parseBlock();
             return block ? std::unique_ptr<Stmt>(block.release()) : nullptr;
@@ -113,23 +130,164 @@ namespace lum{
         auto s = std::make_unique<ExpressionStmt>();
         s->expression = std::move(expr);
 
-        if(match(TokenType::NewLine)){
-            while(match(TokenType::NewLine)){}
-        }else if(!(check(TokenType::RightBrace) || isTokEOF())){
-            lum::Error::throw_err("expected newline after statement", previousToken().line, previousToken().column);
-
-            while(!check(TokenType::NewLine) && !check(TokenType::RightBrace) && !isTokEOF()){
-                advanceToken();
-            }
-            if(match(TokenType::NewLine)){
-                while(match(TokenType::NewLine)){}
-            }
-        }
-
+        finishStatement("expected newline after statement");
         return s;
     }
 
     std::unique_ptr<Expr> Parser::parseExpression(){
+        return parseAssignment();
+        // if(match(TokenType::LogicalOR)) parseLogicalOR();
+        // if(match(TokenType::LogicalAND)) parseLogicalAND();
+        // if(match(TokenType::EqualEqual)) parseBinaryComparison();
+        // if(match(TokenType::EqualEqual)) parseTerm();
+        // if(match(TokenType::EqualEqual)) parseFactor();
+        // if(match(TokenType::EqualEqual)) parseUnary();
+        // if(match(TokenType::EqualEqual)) parseCall();
+        // if(match(TokenType::EqualEqual)) parsePrimary();
+    }
+
+    std::unique_ptr<Expr> Parser::parseAssignment(){
+       auto expr = parseLogicalOR();
+
+       if(match(TokenType::Equal)){
+           Token equals = previousToken();
+           auto value = parseAssignment();
+
+           if(auto* var = dynamic_cast<VariableExpr*>(expr.get())){
+               auto assign = std::make_unique<AssignExpr>();
+               assign->name = var->name;
+               assign->expression = std::move(value);
+               return assign;
+           }
+
+           lum::Error::throw_err("invalid assignment target", equals.line, equals.column);
+       }
+
+       return expr;
+    }
+
+    std::unique_ptr<Expr> Parser::parseLogicalOR(){
+        auto expr = parseLogicalAND();
+
+        while(match(TokenType::LogicalOR)){
+            Token or_symbol = previousToken();
+            auto right = parseLogicalAND();
+
+            auto logical = std::make_unique<LogicalExpr>();
+            logical->logic_token = or_symbol;
+            logical->left_expression = std::move(expr);
+            logical->right_expression = std::move(right);
+            expr = std::move(logical);
+        }
+
+        return expr;
+    }
+
+    std::unique_ptr<Expr> Parser::parseLogicalAND(){
+		auto expr = parseEquality();
+
+		while(match(TokenType::LogicalAND)){
+			Token and_symbol = previousToken();
+            auto right = parseEquality();
+
+            auto logical = std::make_unique<LogicalExpr>();
+            logical->logic_token = and_symbol;
+            logical->left_expression = std::move(expr);
+            logical->right_expression = std::move(right);
+            expr = std::move(logical);
+		}
+
+		return expr;
+	}
+	std::unique_ptr<Expr> Parser::parseEquality(){
+        auto expr = parseComparison();
+
+        while(match(TokenType::EqualEqual) ||
+            match(TokenType::BangEqual)
+        ){
+           Token symbol = previousToken();
+           auto right = parseComparison();
+
+           auto val = std::make_unique<BinaryExpr>();
+           val->left_expression = std::move(expr);
+           val->bin_operator = symbol;
+           val->right_expression = std::move(right);
+           expr = std::move(val);
+        }
+
+        return expr;
+    }
+
+    std::unique_ptr<Expr> Parser::parseComparison(){
+        auto expr = parseTerm();
+
+        while(match(TokenType::GreaterEqual) ||
+            match(TokenType::Greater) ||
+            match(TokenType::Less) ||
+            match(TokenType::LessEqual)
+        ){
+           Token symbol = previousToken();
+           auto right = parseTerm();
+
+           auto val = std::make_unique<BinaryExpr>();
+           val->left_expression = std::move(expr);
+           val->bin_operator = symbol;
+           val->right_expression = std::move(right);
+           expr = std::move(val);
+        }
+
+        return expr;
+    }
+
+    std::unique_ptr<Expr> Parser::parseTerm(){ // +, -
+        auto expr = parseFactor();
+
+        while(match(TokenType::Plus) ||
+            match(TokenType::Minus)
+        ){
+            Token symbol = previousToken();
+            auto right = parseFactor();
+
+            auto val = std::make_unique<BinaryExpr>();
+            val->left_expression = std::move(expr);
+            val->bin_operator = symbol;
+            val->right_expression = std::move(right);
+            expr = std::move(val);
+        }
+
+        return expr;
+    }
+
+    std::unique_ptr<Expr> Parser::parseFactor(){ // +, -
+        auto expr = parseUnary();
+
+        while(match(TokenType::Star) ||
+            match(TokenType::Slash) ||
+            match(TokenType::Percent)
+        ){
+            Token symbol = previousToken();
+            auto right = parseUnary();
+
+            auto val = std::make_unique<BinaryExpr>();
+            val->left_expression = std::move(expr);
+            val->bin_operator = symbol;
+            val->right_expression = std::move(right);
+            expr = std::move(val);
+        }
+
+        return expr;
+    }
+
+    std::unique_ptr<Expr> Parser::parseUnary(){
+        if(match(TokenType::Bang) || match(TokenType::Minus)){
+            Token symbol = previousToken();
+            auto right = parseUnary();
+
+            auto expr = std::make_unique<UnaryExpr>();
+            expr->unary_operator = symbol;
+            expr->right_expression = std::move(right);
+            return expr;
+        }
         return parseCall();
     }
 
@@ -146,7 +304,7 @@ namespace lum{
                 skipNewLines();
                 if(!match(TokenType::Comma)) break;
             }
-            consume(TokenType::RightParen, "Expect ')' after arguments.");
+            consume(TokenType::RightParen, "expect ')' after arguments.");
             expr = std::move(call);
             } else {
                 break;
@@ -155,10 +313,42 @@ namespace lum{
         return expr;
     }
 
-    // std::unique_ptr<ReturnStmt> Parser::parseReturn(){
+    std::unique_ptr<ReturnStmt> Parser::parseReturn(){
+        auto stmt = std::make_unique<ReturnStmt>();
+        stmt->return_token = previousToken();
 
-    //     return // ?;
-    // }
+        if(!(check(TokenType::NewLine) || check(TokenType::RightBrace) || isTokEOF())){
+            stmt->return_expr = parseExpression();
+        }
+        finishStatement("expected newline after return");
+        return stmt;
+    }
+
+    std::unique_ptr<IfStmt> Parser::parseIf(){
+        auto stmt = std::make_unique<IfStmt>();
+        stmt->if_token = previousToken();
+        stmt->condition = parseExpression();
+        consume(TokenType::LeftBrace, "expect { after if condition");
+        stmt->then_branch = parseBlock(); // if branch
+        skipNewLines();
+        if(match(TokenType::Else)){
+            consume(TokenType::LeftBrace, "expect '{' after else");
+            stmt->else_branch = parseBlock();
+        }
+
+        return stmt;
+    }
+
+    std::unique_ptr<WhileStmt> Parser::parseWhile(){
+        auto stmt = std::make_unique<WhileStmt>();
+        stmt->while_token = previousToken();
+        stmt->condition = parseExpression();
+        consume(TokenType::LeftBrace, "expect '{' after while condition");
+        stmt->while_block = parseBlock();
+
+
+        return stmt;
+    }
 
     std::unique_ptr<Expr> Parser::parsePrimary(){
         if(match(TokenType::Number) || match(TokenType::String) || match(TokenType::True) || match(TokenType::False) || match(TokenType::Nil)){
@@ -177,11 +367,11 @@ namespace lum{
 
         if(match(TokenType::LeftParen)){
             auto expr = parseExpression();
-            consume(TokenType::RightParen, "Expect ')' after expression.");
+            consume(TokenType::RightParen, "expect ')' after expression.");
             return expr;
         }
 
-        lum::Error::throw_err("Expected expression.", peekToken().line, peekToken().column);
+        lum::Error::throw_err("expected expression", peekToken().line, peekToken().column);
         return nullptr;
     }
 
@@ -191,6 +381,8 @@ namespace lum{
 
        while(!isTokEOF()){
            skipNewLines();
+           if(isTokEOF()) break;
+
            auto decl = parseDeclaration();
             if(decl) program->statements.push_back(std::move(decl));
             else{

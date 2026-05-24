@@ -15,6 +15,8 @@ namespace lum{
         {"return", TokenType::Return},
         {"true", TokenType::True},
         {"false", TokenType::False},
+        {"and", TokenType::LogicalAND},
+        {"or", TokenType::LogicalOR},
         {"nil", TokenType::Nil},
         {"use", TokenType::Use},
     };

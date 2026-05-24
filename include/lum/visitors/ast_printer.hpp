@@ -22,6 +22,8 @@ namespace lum{
 
             void visitAssignExpr(AssignExpr& expr) override;
 
+            void visitLogicalExpr(LogicalExpr& expr) override;
+
             void visitExpressionStmt(ExpressionStmt& stmt) override;
 
             void visitBlockStmt(BlockStmt& stmt) override;

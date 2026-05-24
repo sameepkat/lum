@@ -37,6 +37,15 @@ namespace lum{
         indent--;
     }
 
+    void ASTPrinter::visitLogicalExpr(LogicalExpr& expr){
+        printIndent();
+        std::cout << "LogicalExpr: (" << expr.logic_token.lexeme << ")\n";
+        indent++;
+        if(expr.left_expression) expr.left_expression->accept(*this);
+        if(expr.right_expression) expr.right_expression->accept(*this);
+        indent--;
+    }
+
     void ASTPrinter::visitUnaryExpr(UnaryExpr& expr){
         printIndent();
         std::cout << "UnaryExpr (" << expr.unary_operator.lexeme << ")\n";
@@ -147,4 +156,5 @@ namespace lum{
         }
         indent--;
     }
+
 }

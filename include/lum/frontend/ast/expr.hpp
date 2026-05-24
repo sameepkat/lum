@@ -57,6 +57,16 @@ namespace lum{
         std::unique_ptr<Expr> right_expression;
     };
 
+    class LogicalExpr: public Expr {
+        public:
+        void accept(ExprVisitor& visitor) override;
+
+        std::unique_ptr<Expr> left_expression;
+        Token logic_token;
+        std::unique_ptr<Expr> right_expression;
+    };
+
+
     // class ArrayExpr: public Expr{};
     // class ObjectExpr: public Expr{};
     // class IndexExpr: public Expr{};

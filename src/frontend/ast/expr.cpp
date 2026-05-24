@@ -26,4 +26,8 @@ namespace lum{
     void BinaryExpr::accept(ExprVisitor& visitor) {
         visitor.visitBinaryExpr(*this);
     }
+
+    void LogicalExpr::accept(ExprVisitor& visitor){
+        visitor.visitLogicalExpr(*this);
+    }
 }
