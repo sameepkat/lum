@@ -1,5 +1,7 @@
 #include "lum/error/error.hpp"
 #include <iostream>
+#include <stdexcept>
+#include <string>
 
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
@@ -19,5 +21,15 @@ namespace lum{
         << pos
         << RESET
         << std::endl;
+    }
+
+    [[noreturn]] void Error::throw_and_return(std::string msg, int line, int pos){
+        throw std::runtime_error(
+        msg
+        + " at line: "
+        + std::to_string(line)
+        + " and pos: "
+        + std::to_string(pos)
+        );
     }
 }
