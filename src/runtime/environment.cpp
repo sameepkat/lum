@@ -29,14 +29,21 @@ namespace lum{
     }
 
     void Environment::assign(const Token& token, Value value){
-        auto it = this->values.find(token.lexeme);
-        if(it != this->values.end()){
-            it->second = std::move(value);
-        }else if(this->enclosing != nullptr){
-            this->enclosing->assign(token, std::move(value));
-        }else{
-            lum::Error::throw_and_return("can't assign " + token.lexeme, token.line, token.column);
-        }
+      if (!(assignExisting(token, value))) {
+        this->define(token.lexeme, value);
+      }
     }
+
+  bool Environment::assignExisting(const Token& token, Value value) {
+    auto it = this->values.find(token.lexeme);
+    if (it != this->values.end()) {
+      it->second = std::move(value);
+      return true;
+    }
+    else if (this->enclosing != nullptr) {
+      return enclosing->assignExisting(token, value);
+    }
+    return false;
+  }
 
 }

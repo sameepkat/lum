@@ -18,5 +18,6 @@ namespace lum{
         private:
             std::unordered_map<std::string, Value> values;
             std::shared_ptr<Environment> enclosing;
+            bool assignExisting(const Token&, Value);
     };
 }

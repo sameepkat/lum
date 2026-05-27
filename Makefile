@@ -19,7 +19,11 @@ SOURCES := $(shell find $(SRC_DIR) -name "*.cpp")
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SOURCES))
 DEPENDS := $(OBJECTS:.o=.d)
 
-.PHONY = all debug release run clean rebuild dirs
+TEST_DIR := tests
+PASS_TESTS := $(shell find $(TEST_DIR)/pass -name "*.lum" | sort)
+FAIL_TESTS := $(shell find $(TEST_DIR)/fail -name "*.lum" | sort)
+
+.PHONY: all debug release run clean rebuild dirs test test-pass test-fail
 
 all: debug
 
@@ -42,6 +46,20 @@ dirs:
 
 run: debug
 	./$(TARGET) examples/hello_world.lum
+
+test: test-pass
+
+test-pass: debug
+	@for test in $(PASS_TESTS); do \
+		echo "Running $$test"; \
+			./$(TARGET) $$test || exit 1; \
+	done
+
+test-fail: debug
+	@for test in $(FAIL_TESTS); do \
+		echo "Running $$test"; \
+		./$(TARGET) $$test && exit 1 || true; \
+	done
 
 clean:
 	rm -rf $(BUILD_DIR)
