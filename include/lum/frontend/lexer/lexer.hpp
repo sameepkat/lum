@@ -35,6 +35,7 @@ namespace lum{
 
         void scanToken();
         void addToken(TokenType type);
+        void addStrToken();
 
         void identifier();
         void number();

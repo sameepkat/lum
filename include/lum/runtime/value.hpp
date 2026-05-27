@@ -30,6 +30,16 @@ namespace lum{
             std::string toString() const;
             bool isTruthy() const;
             bool equals(const Value& other) const;
+
+            bool isNumber() const;
+            double asNumber() const;
+            bool isString() const;
+            std::string asString() const;
+
+            bool isLumFunction() const;
+            bool isNativeFunction() const;
+            std::shared_ptr<LumFunction> asLumFunction() const;
+            std::shared_ptr<NativeFunction> asNativeFunction() const;
         private:
             valueData data;
     };

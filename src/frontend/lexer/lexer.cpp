@@ -188,6 +188,18 @@ namespace lum{
         });
     }
 
+    void Lexer::addStrToken(){
+        std::string text = source.substr(start+1, current - start-2);
+
+        tokens.push_back(Token{
+            TokenType::String,
+            text,
+            line,
+            tokenColumn
+        });
+    }
+
+
     void Lexer::identifier() {
        while(
            std::isalnum(static_cast<unsigned char>(peek())) || peek() == '_'
@@ -233,6 +245,6 @@ namespace lum{
 
        advance();
 
-       addToken(TokenType::String);
+       addStrToken();
     }
 }

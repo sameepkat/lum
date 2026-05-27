@@ -3,6 +3,8 @@
 #include <utility>
 #include <variant>
 #include "lum/runtime/value.hpp"
+#include "lum/runtime/function.hpp"
+#include "lum/runtime/native_function.hpp"
 
 namespace lum{
 
@@ -44,5 +46,30 @@ namespace lum{
             else if(std::holds_alternative<std::shared_ptr<LumFunction>>(data)) return std::get<std::shared_ptr<LumFunction>>(data) == std::get<std::shared_ptr<LumFunction>>(other.data);
             else if(std::holds_alternative<std::shared_ptr<NativeFunction>>(data)) return std::get<std::shared_ptr<NativeFunction>>(data) == std::get<std::shared_ptr<NativeFunction>>(other.data);
             return false;
+        }
+
+        bool Value::isNumber() const{
+            return std::holds_alternative<double>(data);
+        }
+        double Value::asNumber() const{
+            return std::get<double>(data);
+        }
+        bool Value::isString() const{
+            return std::holds_alternative<std::string>(data);
+        }
+        std::string Value::asString() const{
+            return std::get<std::string>(data);
+        }
+        bool Value::isLumFunction() const{
+                return std::holds_alternative<std::shared_ptr<LumFunction>>(data);
+            }
+        bool Value::isNativeFunction() const{
+                return std::holds_alternative<std::shared_ptr<NativeFunction>>(data);
+            }
+        std::shared_ptr<LumFunction> Value::asLumFunction() const {
+            return std::get<std::shared_ptr<LumFunction>>(data);
+        }
+        std::shared_ptr<NativeFunction> Value::asNativeFunction() const {
+            return std::get<std::shared_ptr<NativeFunction>>(data);
         }
 }

@@ -304,7 +304,7 @@ namespace lum{
                 skipNewLines();
                 if(!match(TokenType::Comma)) break;
             }
-            consume(TokenType::RightParen, "expect ')' after arguments.");
+            call->paren = consume(TokenType::RightParen, "expect ')' after arguments.");
             expr = std::move(call);
             } else {
                 break;

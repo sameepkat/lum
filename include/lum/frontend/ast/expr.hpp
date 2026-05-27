@@ -37,6 +37,7 @@ namespace lum{
         public:
         void accept(ExprVisitor& visitor) override;
 
+        Token paren;
         std::unique_ptr<Expr> callee;
         std::vector<std::unique_ptr<Expr>> arguments;
     };

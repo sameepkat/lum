@@ -32,4 +32,8 @@ namespace lum{
         + std::to_string(pos)
         );
     }
+
+  void Error::throw_msg(std::string msg) {
+      std::cerr << RED << msg << RESET << std::endl;
+    }
 }
