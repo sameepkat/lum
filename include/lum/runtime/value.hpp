@@ -35,12 +35,18 @@ namespace lum{
             double asNumber() const;
             bool isString() const;
             std::string asString() const;
+            bool isBool() const;
+            bool asBool() const;
+
+            bool isCallable() const;
 
             bool isLumFunction() const;
             bool isNativeFunction() const;
             std::shared_ptr<LumFunction> asLumFunction() const;
             std::shared_ptr<NativeFunction> asNativeFunction() const;
+
         private:
             valueData data;
+            bool isInt(double) const;
     };
 }

@@ -14,8 +14,11 @@ namespace lum{
     class Interpreter: public ExprVisitor,public StmtVisitor{
         public:
       Interpreter();
-          void interpret(Program &);
-      void setInteractiveMode(bool value);
+            void interpret(Program &);
+            void setInteractiveMode(bool value);
+
+      // Helper to print
+            void emit(const Value& value, bool new_line, bool to_stderr);
 
             // produce values
             void visitLiteralExpr(LiteralExpr& expr) override;
@@ -43,9 +46,13 @@ namespace lum{
                     std::shared_ptr<Environment> previous_env;
             };
         private:
-      bool interactive_mode = false; // for repl and notebooks
-      std::optional<Value> last_result; // user-facing session output state
-      friend class LumFunction;
+            bool interactive_mode = false; // for repl and notebooks
+            std::optional<Value> last_result; // user-facing session output state
+
+      // std::ostream* out_stream;
+      // std::ostream* err_stream;
+
+            friend class LumFunction;
       
             std::shared_ptr<Environment> globals, environment;
             Value evaluated_value;
@@ -53,6 +60,7 @@ namespace lum{
             Value evaluate(Expr&);
             void execute(Stmt&);
             void executeBlock(const std::vector<std::unique_ptr<Stmt>>&, std::shared_ptr<Environment>);
+
             // TODO: Type-check helpers
             // TODO: truthiness/ equality helpers
     };

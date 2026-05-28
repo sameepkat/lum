@@ -1,2 +1,2 @@
-print(10 * 2 / 4)
-print(100 * 34 - 23 + 32 / 16 + 2)
+__emit(10 * 2 / 4, true, false)
+__emit(100 * 34 - 23 + 32 / 16 + 2, true, false)

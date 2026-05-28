@@ -59,5 +59,8 @@ namespace lum{
             std::unique_ptr<Expr> parseCall();
             std::unique_ptr<Expr> parsePrimary();
 
+
+      int functionDepth = 0;
+
     };
 }

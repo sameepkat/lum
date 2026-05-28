@@ -9,8 +9,8 @@
 #include "lum/stdlib/core_lib.hpp"
 #include <cmath>
 #include <memory>
-#include <stdexcept>
 #include <string>
+#include <iostream>
 
 namespace lum {
     Interpreter::Interpreter() {
@@ -20,13 +20,10 @@ namespace lum {
     }
   
     void Interpreter::interpret(Program& program){
-      try {
         for(auto& stmt: program.statements){
             execute(*stmt);
         }
-      } catch (const std::runtime_error &e) {
-        lum::Error::throw_msg(std::string("error: ") + e.what());
-      }
+      
         
     }
   void Interpreter::setInteractiveMode(bool value) {
@@ -139,7 +136,7 @@ namespace lum {
                 break;
             case lum::TokenType::Minus:
                 if(right.isNumber()) this->evaluated_value = Value(-right.asNumber());
-                else lum::Error::throw_and_return("can't use - on non negative number", expr.unary_operator.line, expr.unary_operator.column);
+                else lum::Error::throw_and_return("invalid operand for unary: ", expr.unary_operator.line, expr.unary_operator.column);
                 break;
             default:
                 lum::Error::throw_and_return("unrecognized unary operation: " + expr.unary_operator.lexeme, expr.unary_operator.line, expr.unary_operator.column);
@@ -150,19 +147,22 @@ namespace lum {
     void Interpreter::visitCallExpr(CallExpr& expr) {
         Value callee = evaluate(*expr.callee);
         std::vector<Value> args;
+
+        if (!callee.isCallable()) {
+           lum::Error::throw_and_return("value is not callable: " + callee.toString(), expr.paren.line, expr.paren.column);
+        }
+
         for (const auto &arg : expr.arguments) {
           args.push_back(evaluate(*arg));
         }
+
         if (callee.isLumFunction()) {
-          if(!(callee.asLumFunction()->arity() == args.size())) lum::Error::throw_and_return("function arg and param count doesn't match", expr.paren.line, expr.paren.column);
+          if(!(callee.asLumFunction()->arity() == args.size())) lum::Error::throw_and_return("expected arguments: " + std::to_string(callee.asLumFunction()->arity()) + "  received arguments: " + std::to_string(args.size()), expr.paren.line, expr.paren.column);
           else this->evaluated_value = callee.asLumFunction()->call(*this, args);
         } else if (callee.isNativeFunction()) {
-          if(!(callee.asNativeFunction()->arity() == args.size())) lum::Error::throw_and_return("function arg and param count doesn't match", expr.paren.line, expr.paren.column);
+          if(!(callee.asNativeFunction()->arity() == args.size())) lum::Error::throw_and_return("expected arguments: " + std::to_string(callee.asNativeFunction()->arity()) + "  received arguments: " + std::to_string(args.size()), expr.paren.line, expr.paren.column);
           else this->evaluated_value = callee.asNativeFunction()->call(*this, args);
-        } else {
-           lum::Error::throw_and_return("function not callable", expr.paren.line, expr.paren.column);
         }
-
     }
     void Interpreter::visitAssignExpr(AssignExpr& expr) {
         Value right = evaluate(*expr.expression);
@@ -177,17 +177,17 @@ namespace lum {
         switch (expr.logic_token.type) {
             case lum::TokenType::LogicalAND:
                 if(!left.isTruthy()){
-                    this->evaluated_value = Value(false);
+                    this->evaluated_value = left;
                 }else{
                     Value right = evaluate(*expr.right_expression);
-                    this->evaluated_value = Value(right.isTruthy());
+                    this->evaluated_value = right;
                 }
                 break;
             case lum::TokenType::LogicalOR:
-                if(left.isTruthy()) this->evaluated_value = Value(true);
+                if(left.isTruthy()) this->evaluated_value = left;
                 else{
                     Value right = evaluate(*expr.right_expression);
-                    this->evaluated_value = Value(right.isTruthy());
+                    this->evaluated_value = right;
                 }
                 break;
             default:
@@ -269,5 +269,15 @@ namespace lum {
 
     Interpreter::EnvironmentGuard::~EnvironmentGuard(){
         this->interpreter->environment = std::move(this->previous_env);
+    }
+
+    void Interpreter::emit(const Value &value, bool new_line,
+                             bool to_stderr) {
+      std::string text = value.toString();
+      if (to_stderr) {
+        new_line ? std::cerr << text << "\n" : std::cerr << text;
+      } else {
+        new_line ? std::cout << text << "\n" : std::cout << text;
+      }
     }
 }

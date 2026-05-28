@@ -50,8 +50,7 @@ namespace lum{
 
     const Token& Parser::consume(TokenType type, std::string message){
         if(check(type)) return  advanceToken();
-        lum::Error::throw_err(message, peekToken().line, peekToken().column);
-        return tokens.back();
+        lum::Error::throw_parse(message, peekToken().line, peekToken().column);
     }
 
     void Parser::skipNewLines(){
@@ -66,21 +65,15 @@ namespace lum{
     }
 
     void Parser::finishStatement(std::string err_msg){
-        if(match(TokenType::NewLine)){
+        if(!match(TokenType::NewLine) && !(check(TokenType::RightBrace) || isTokEOF())){
+            lum::Error::throw_parse(err_msg, previousToken().line, previousToken().column);
+        }else{
             skipNewLines();
-        }else if(!(check(TokenType::RightBrace) || isTokEOF())){
-            lum::Error::throw_err(err_msg, previousToken().line, previousToken().column);
-
-            while(!check(TokenType::NewLine) && !check(TokenType::RightBrace) && !isTokEOF()){
-                advanceToken();
-            }
-            if(match(TokenType::NewLine)){
-                skipNewLines();
-            }
         }
     }
 
     std::unique_ptr<FunctionStmt> Parser::parseFunctionDeclaration(){
+        this->functionDepth++;
         auto func = std::make_unique<FunctionStmt>();
 
         func->func_name = consume(TokenType::Identifier, "expect function name");
@@ -94,6 +87,8 @@ namespace lum{
         consume(TokenType::RightParen, "expect ')' after parameters.");
         consume(TokenType::LeftBrace, "expect '{' after function declaration");
         func->function_block = parseBlock();
+        this->functionDepth--;
+
         return func;
     }
 
@@ -105,7 +100,7 @@ namespace lum{
             if(isTokEOF()) break;
             auto decl = parseDeclaration();
             if(decl) block->statements.push_back(std::move(decl));
-            else advanceToken();
+            // else advanceToken();
         }
 
         consume(TokenType::RightBrace, "expect '}' after block");
@@ -160,7 +155,7 @@ namespace lum{
                return assign;
            }
 
-           lum::Error::throw_err("invalid assignment target", equals.line, equals.column);
+           lum::Error::throw_parse("invalid assignment target", equals.line, equals.column);
        }
 
        return expr;
@@ -317,9 +312,13 @@ namespace lum{
         auto stmt = std::make_unique<ReturnStmt>();
         stmt->return_token = previousToken();
 
-        if(!(check(TokenType::NewLine) || check(TokenType::RightBrace) || isTokEOF())){
+          if (functionDepth>0) {
+            if(!(check(TokenType::NewLine) || check(TokenType::RightBrace) || isTokEOF())){
             stmt->return_expr = parseExpression();
-        }
+            }
+          }else {
+            lum::Error::throw_parse("top-level return not allowed", stmt->return_token.line, stmt->return_token.column);
+          }
         finishStatement("expected newline after return");
         return stmt;
     }
@@ -371,8 +370,7 @@ namespace lum{
             return expr;
         }
 
-        lum::Error::throw_err("expected expression", peekToken().line, peekToken().column);
-        return nullptr;
+        lum::Error::throw_parse("expected expression", peekToken().line, peekToken().column);
     }
 
 
@@ -385,11 +383,10 @@ namespace lum{
 
            auto decl = parseDeclaration();
             if(decl) program->statements.push_back(std::move(decl));
-            else{
-                    // TODO: ERROR
-                    advanceToken();
-                }
        }
        return program;
    }
+
+
+  
 }

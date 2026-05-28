@@ -36,4 +36,18 @@ namespace lum{
   void Error::throw_msg(std::string msg) {
       std::cerr << RED << msg << RESET << std::endl;
     }
+
+  [[noreturn]] void Error::throw_parse(std::string msg, int line, int pos) {
+        throw std::runtime_error(
+        msg
+        + " at line: "
+        + std::to_string(line)
+        + " and pos: "
+        + std::to_string(pos)
+        );
+     }
+     void Error::throw_internal(std::string msg) {
+       
+        throw std::runtime_error(msg);
+     }
 }

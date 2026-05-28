@@ -1,4 +1,6 @@
+#include <cmath>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <variant>
@@ -20,7 +22,15 @@ namespace lum{
         std::string Value::toString() const{
             std::string value = "";
             if(std::holds_alternative<std::monostate>(data)) value="nil";
-            else if(std::holds_alternative<double>(data)) value = std::to_string(std::get<double>(data));
+            else if (std::holds_alternative<double>(data)) {
+              double number = std::get<double>(data);
+              if(isInt(number)) value =  std::to_string(static_cast<long long>(number));
+              else {
+                std::ostringstream out;
+                out << number;
+                value = out.str();
+              }
+            }
             else if(std::holds_alternative<bool>(data)) value = std::get<bool>(data) ? "true" : "false";
             else if(std::holds_alternative<std::string>(data)) value = std::get<std::string>(data);
             else if(std::holds_alternative<std::shared_ptr<LumFunction>>(data)) value = "<fn>";
@@ -62,7 +72,8 @@ namespace lum{
         }
         bool Value::isLumFunction() const{
                 return std::holds_alternative<std::shared_ptr<LumFunction>>(data);
-            }
+        }
+          
         bool Value::isNativeFunction() const{
                 return std::holds_alternative<std::shared_ptr<NativeFunction>>(data);
             }
@@ -71,5 +82,19 @@ namespace lum{
         }
         std::shared_ptr<NativeFunction> Value::asNativeFunction() const {
             return std::get<std::shared_ptr<NativeFunction>>(data);
+        }
+
+        bool Value::isInt(double d) const {
+          return std::isfinite(d) && std::trunc(d) == d;
+        }
+
+        bool Value::isBool() const {
+            return std::holds_alternative<bool>(data);
+        }
+        bool Value::asBool() const {
+            return std::get<bool>(data);
+        }
+        bool Value::isCallable() const {
+          return isLumFunction() || isNativeFunction();
         }
 }

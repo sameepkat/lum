@@ -1,4 +1,4 @@
-print(10 - 2 + 3 - 4)
+__emit(10-2+3-4, true, false)
 y = 10 + 2 - 3
-x = 100000 + 200000
-print(x + y)
+x = 10 + 20
+__emit(x + y, true, false)

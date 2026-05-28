@@ -6,6 +6,8 @@
 #include "lum/frontend/parser/parser.hpp"
 #include "lum/visitors/ast_printer.hpp"
 #include "lum/visitors/interpreter.hpp"
+#include "lum/error/error.hpp"
+
 int main(int argc, char** argv){
     if (argc != 2){
         std::cerr << "Usage: lum <file.lum>\n";
@@ -40,6 +42,12 @@ int main(int argc, char** argv){
     // printer.print(*program);
 
     lum::Interpreter interpreter;
-    interpreter.interpret(*program);
+
+    try {
+        interpreter.interpret(*program);
+    } catch (const std::runtime_error &e) {
+        lum::Error::throw_msg(std::string("error found: ") + e.what());
+        return 1;
+    }
     return 0;
 }
