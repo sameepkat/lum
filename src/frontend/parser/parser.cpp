@@ -153,6 +153,14 @@ namespace lum{
                assign->name = var->name;
                assign->expression = std::move(value);
                return assign;
+           } else if (auto *arr = dynamic_cast<IndexExpr *>(expr.get())) {
+             auto assign = std::make_unique<SetIndexExpr>();
+             assign->target = std::move(arr->target);
+             assign->index = std::move(arr->index);
+             assign->value = std::move(value);
+             assign->right_bracket = std::move(arr->right_bracket);
+
+             return assign;
            }
 
            lum::Error::throw_parse("invalid assignment target", equals.line, equals.column);
@@ -301,11 +309,26 @@ namespace lum{
             }
             call->paren = consume(TokenType::RightParen, "expect ')' after arguments.");
             expr = std::move(call);
+            }else if (match(TokenType::LeftBracket)) {
+              auto arr = parseIndex(std::move(expr));
+
+              expr = std::move(arr);
+
             } else {
                 break;
             }
         }
         return expr;
+    }
+
+
+  std::unique_ptr<Expr> Parser::parseIndex(std::unique_ptr<Expr> target) {
+      auto index_expr = std::make_unique<IndexExpr>();
+      index_expr->target = std::move(target);
+      index_expr->index = parseExpression();
+      index_expr->right_bracket = consume(TokenType::RightBracket, "expected ']' after array index ");
+
+      return index_expr;
     }
 
     std::unique_ptr<ReturnStmt> Parser::parseReturn(){
@@ -370,9 +393,27 @@ namespace lum{
             return expr;
         }
 
+        if(match(TokenType::LeftBracket)){
+            auto expr = parseArray();
+            return expr;
+        }
+
         lum::Error::throw_parse("expected expression", peekToken().line, peekToken().column);
     }
 
+
+  std::unique_ptr<Expr> Parser::parseArray() {
+          auto array = std::make_unique<ArrayExpr>();
+
+        while(!check(TokenType::RightBracket) && !isTokEOF()){
+          array->array_elements.push_back(parseExpression());
+          if(!match(TokenType::Comma)) break;
+        }
+        array->bracket =
+            consume(TokenType::RightBracket, "expect ']' after array elements.");
+
+      return array;
+    }
 
    std::unique_ptr<Program>  Parser::parse(){
        std::unique_ptr<Program> program = std::make_unique<Program>();
@@ -387,6 +428,4 @@ namespace lum{
        return program;
    }
 
-
-  
 }

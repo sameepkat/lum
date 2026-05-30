@@ -29,5 +29,17 @@ namespace lum{
 
     void LogicalExpr::accept(ExprVisitor& visitor){
         visitor.visitLogicalExpr(*this);
-    }
+   }
+
+    void ArrayExpr::accept(ExprVisitor& visitor) {
+            visitor.visitArrayExpr(*this);
+        }
+
+    void IndexExpr::accept(ExprVisitor& visitor) {
+            visitor.visitIndexExpr(*this);
+        }
+
+    void SetIndexExpr::accept(ExprVisitor& visitor) {
+            visitor.visitSetIndexExpr(*this);
+        }
 }

@@ -1,0 +1,3 @@
+a = [10, 20, 30]
+__emit(a[0], true, false)
+__emit(a[2], true, false)

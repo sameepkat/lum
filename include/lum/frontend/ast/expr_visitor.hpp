@@ -8,6 +8,8 @@ namespace lum{
     class UnaryExpr;
     class CallExpr;
     class AssignExpr;
+    class ArrayExpr;
+    class IndexExpr;
 
     class ExprVisitor{
         public:
@@ -20,6 +22,9 @@ namespace lum{
         virtual void visitCallExpr(CallExpr& expr) = 0;
         virtual void visitAssignExpr(AssignExpr& expr) = 0;
         virtual void visitLogicalExpr(LogicalExpr& expr) = 0;
+        virtual void visitArrayExpr(ArrayExpr& expr) = 0;
+        virtual void visitIndexExpr(IndexExpr& expr) = 0;
+        virtual void visitSetIndexExpr(SetIndexExpr& expr) = 0;
     };
 
 }

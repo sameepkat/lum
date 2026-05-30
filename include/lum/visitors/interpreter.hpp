@@ -28,6 +28,9 @@ namespace lum{
             void visitCallExpr(CallExpr& expr) override;
             void visitAssignExpr(AssignExpr& expr) override;
             void visitLogicalExpr(LogicalExpr& expr) override;
+            void visitArrayExpr(ArrayExpr& expr) override;
+            void visitIndexExpr(IndexExpr& expr) override;
+            void visitSetIndexExpr(SetIndexExpr& expr) override;
 
             // produce side effects
             void visitExpressionStmt(ExpressionStmt& stmt) override;
@@ -48,9 +51,6 @@ namespace lum{
         private:
             bool interactive_mode = false; // for repl and notebooks
             std::optional<Value> last_result; // user-facing session output state
-
-      // std::ostream* out_stream;
-      // std::ostream* err_stream;
 
             friend class LumFunction;
       

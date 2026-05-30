@@ -57,7 +57,9 @@ namespace lum{
             std::unique_ptr<Expr> parseFactor();
             std::unique_ptr<Expr> parseUnary();
             std::unique_ptr<Expr> parseCall();
+            std::unique_ptr<Expr> parseIndex(std::unique_ptr<Expr>);
             std::unique_ptr<Expr> parsePrimary();
+            std::unique_ptr<Expr> parseArray();
 
 
       int functionDepth = 0;

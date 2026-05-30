@@ -17,6 +17,7 @@ namespace lum{
         Value::Value(std::string value): data(std::move(value)){}
         Value::Value(std::shared_ptr<LumFunction> value): data(std::move(value)){}
         Value::Value(std::shared_ptr<NativeFunction> value): data(std::move(value)){}
+        Value::Value(std::shared_ptr<std::vector<Value>> value): data(std::move(value)){}
 
 
         std::string Value::toString() const{
@@ -35,6 +36,15 @@ namespace lum{
             else if(std::holds_alternative<std::string>(data)) value = std::get<std::string>(data);
             else if(std::holds_alternative<std::shared_ptr<LumFunction>>(data)) value = "<fn>";
             else if(std::holds_alternative<std::shared_ptr<NativeFunction>>(data)) value = "<native fn>";
+            else if (std::holds_alternative<std::shared_ptr<std::vector<Value>>>(data)) {
+              value = "[";
+                auto array = asArray();
+                for (int i=0;  i < array->size() ; ++i) {
+                  if(i>0)value += ", ";
+                  value += (*array)[i].toString();
+                }
+              value += "]";
+            }
 
             return value;
         }
@@ -94,7 +104,15 @@ namespace lum{
         bool Value::asBool() const {
             return std::get<bool>(data);
         }
+
         bool Value::isCallable() const {
           return isLumFunction() || isNativeFunction();
+        }
+        bool Value::isArray() const {
+          
+          return std::holds_alternative<std::shared_ptr<std::vector<Value>>>(data);
+        }
+        std::shared_ptr<std::vector<Value>> Value::asArray() const {
+            return std::get<std::shared_ptr<std::vector<Value>>>(data);
         }
 }

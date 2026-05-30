@@ -157,4 +157,33 @@ namespace lum{
         indent--;
     }
 
+      void ASTPrinter::visitArrayExpr(ArrayExpr &expr) {
+      printIndent();
+      std::cout << "Array\n";
+      indent++;
+      printIndent(); std::cout << "Elements:\n";
+      indent++;
+
+      for (int i=0;  i < expr.array_elements.size() ; ++i) {
+        expr.array_elements[i]->accept(*this);
+        indent--;
+        }
+        indent--;
+    }
+
+    void ASTPrinter::visitIndexExpr(IndexExpr &expr) {
+      printIndent();
+      std::cout << "Index\n";
+      indent++;
+      expr.accept(*this);
+      indent--;
+        }
+
+    void ASTPrinter::visitSetIndexExpr(SetIndexExpr &expr) {
+      printIndent();
+      std::cout << "SetIndex\n";
+      indent++;
+      expr.accept(*this);
+      indent--;
+        }
 }

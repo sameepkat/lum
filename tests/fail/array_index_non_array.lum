@@ -1,0 +1,2 @@
+value = 10
+__emit(value[0], true, false)

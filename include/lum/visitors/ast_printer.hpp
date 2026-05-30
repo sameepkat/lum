@@ -35,6 +35,13 @@ namespace lum{
             void visitIfStmt(IfStmt& stmt) override;
 
             void visitWhileStmt(WhileStmt& stmt) override;
+
+            void visitArrayExpr(ArrayExpr& expr) override;
+
+            void visitIndexExpr(IndexExpr& expr) override;
+
+            void visitSetIndexExpr(SetIndexExpr& expr) override;
+
         private:
             int indent = 0;
             void printIndent();

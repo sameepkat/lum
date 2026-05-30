@@ -196,6 +196,65 @@ namespace lum {
         }
     }
 
+  void Interpreter::visitArrayExpr(ArrayExpr &expr) {
+    std::shared_ptr<std::vector<Value>> array = std::make_shared<std::vector<Value>>();
+    for (auto &elem : expr.array_elements) {
+      array->push_back(Value(evaluate(*elem)));
+    }
+
+    this->evaluated_value = array;
+    }
+  void Interpreter::visitIndexExpr(IndexExpr &expr) {
+    auto target = evaluate(*expr.target);
+    Value val;
+    if (target.isArray()) {
+      auto index = evaluate(*expr.index);
+      if (index.isNumber()) {
+        double d = index.asNumber();
+        if (std::isfinite(d) && std::trunc(d) == d) {
+          long long exact_index = static_cast<long long>(d);
+          if (exact_index < target.asArray()->size() && exact_index >= 0) {
+            val = (*target.asArray())[exact_index];
+          } else {
+            lum::Error::throw_and_return("can't access out of bound elements", expr.right_bracket.line, expr.right_bracket.column);   
+          }
+        } else {
+          lum::Error::throw_and_return("index must be whole number ", expr.right_bracket.line, expr.right_bracket.column);   
+        }
+      } else {
+        lum::Error::throw_and_return("array index must be number", expr.right_bracket.line, expr.right_bracket.column);   
+      }
+
+    } else {
+      lum::Error::throw_and_return("can't index into non-array data type ",  expr.right_bracket.line, expr.right_bracket.column);
+    }
+    this->evaluated_value = val;
+    }
+
+  void Interpreter::visitSetIndexExpr(SetIndexExpr &expr) {
+      auto target = evaluate(*expr.target);
+      if (!(target.isArray())) {
+        lum::Error::throw_and_return("can't index into non-array data type", expr.right_bracket.line, expr.right_bracket.column);
+      }
+      auto index = evaluate(*expr.index);
+      if (!(index.isNumber())) {
+        lum::Error::throw_and_return("index must be a number", expr.right_bracket.line, expr.right_bracket.column);
+      }
+
+      double d = index.asNumber();
+      if (!std::isfinite(d) || d != std::trunc(d)) {
+        lum::Error::throw_and_return("index must be a whole number", expr.right_bracket.line, expr.right_bracket.column);
+      }
+      long long exact_index = static_cast<long long>(d);
+      if (exact_index < 0 ) {
+        lum::Error::throw_and_return("index can't be negative", expr.right_bracket.line, expr.right_bracket.column);
+      }
+      if (exact_index >= target.asArray()->size()) {
+        lum::Error::throw_and_return("can't access out of bound elements", expr.right_bracket.line, expr.right_bracket.column);
+      }
+      this->evaluated_value = evaluate(*expr.value);
+      (*target.asArray())[exact_index] = this->evaluated_value;
+    }
     // produce side effects
     void Interpreter::visitExpressionStmt(ExpressionStmt &stmt) {
       Value result = evaluate(*stmt.expression);
@@ -280,4 +339,5 @@ namespace lum {
         new_line ? std::cout << text << "\n" : std::cout << text;
       }
     }
+
 }

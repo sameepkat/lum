@@ -3,10 +3,12 @@
 #include <memory>
 #include <string>
 #include <variant>
+#include <vector>
 
 namespace lum{
     class LumFunction;
     class NativeFunction;
+    class Value;
 
     using valueData = std::variant<
         std::monostate, // nil
@@ -14,7 +16,8 @@ namespace lum{
         bool,
         std::string,
         std::shared_ptr<LumFunction>,
-        std::shared_ptr<NativeFunction>
+        std::shared_ptr<NativeFunction>,
+        std::shared_ptr<std::vector<Value>>
     >;
 
     class Value{
@@ -24,7 +27,8 @@ namespace lum{
             Value(bool value);
             Value(std::string value);
             Value(std::shared_ptr<LumFunction> value);
-            Value(std::shared_ptr<NativeFunction> value);
+            Value(std::shared_ptr <NativeFunction> value);
+            Value(std::shared_ptr<std::vector<Value>> value);
 
 
             std::string toString() const;
@@ -37,6 +41,8 @@ namespace lum{
             std::string asString() const;
             bool isBool() const;
             bool asBool() const;
+            bool isArray() const;
+            std::shared_ptr<std::vector<Value>> asArray() const;
 
             bool isCallable() const;
 
