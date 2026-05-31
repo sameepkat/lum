@@ -65,6 +65,17 @@ namespace lum{
             else if(std::holds_alternative<std::string>(data)) return std::get<std::string>(data) == std::get<std::string>(other.data);
             else if(std::holds_alternative<std::shared_ptr<LumFunction>>(data)) return std::get<std::shared_ptr<LumFunction>>(data) == std::get<std::shared_ptr<LumFunction>>(other.data);
             else if(std::holds_alternative<std::shared_ptr<NativeFunction>>(data)) return std::get<std::shared_ptr<NativeFunction>>(data) == std::get<std::shared_ptr<NativeFunction>>(other.data);
+            else if (std::holds_alternative<std::shared_ptr<std::vector<Value>>>(data)){
+              auto array = std::get<std::shared_ptr<std::vector<Value>>>(data);
+              if(!other.isArray()) return false;
+              if(array->size() != other.asArray()->size()) return false;
+              for (int i = 0; i < array->size(); ++i) {
+                if (!((*array)[i].equals((*other.asArray())[i]))) {
+                  return false;
+                }
+              }
+              return true;
+            }
             return false;
         }
 

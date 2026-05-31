@@ -14,6 +14,7 @@ namespace lum{
             void define(const std::string& name, Value value);
             Value get(const Token& token) const;
             void assign(const Token& token, Value value);
+            std::unordered_map<std::string, Value> snapshotBindings() const;
 
         private:
             std::unordered_map<std::string, Value> values;

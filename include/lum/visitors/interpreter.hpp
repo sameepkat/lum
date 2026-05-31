@@ -19,7 +19,6 @@ namespace lum{
 
       // Helper to print
             void emit(const Value& value, bool new_line, bool to_stderr);
-
             // produce values
             void visitLiteralExpr(LiteralExpr& expr) override;
             void visitVariableExpr(VariableExpr& expr) override;
@@ -39,6 +38,7 @@ namespace lum{
             void visitReturnStmt(ReturnStmt& stmt) override;
             void visitIfStmt(IfStmt& stmt) override;
             void visitWhileStmt(WhileStmt& stmt) override;
+            void visitUseStmt(UseStmt& stmt) override;
 
             class EnvironmentGuard { // For RAII
                 public:

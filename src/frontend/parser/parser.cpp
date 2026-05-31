@@ -57,9 +57,12 @@ namespace lum{
         while(match(TokenType::NewLine));
     }
 
+
     std::unique_ptr<Stmt> Parser::parseDeclaration(){
         if(match(TokenType::Fn)){
             return parseFunctionDeclaration();
+        } else if (match(TokenType::Use)) {
+          return parseUseStatement();
         }
         return parseStatement();
     }
@@ -70,6 +73,15 @@ namespace lum{
         }else{
             skipNewLines();
         }
+    }
+
+  std::unique_ptr<UseStmt> Parser::parseUseStatement() {
+        auto use_stmt = std::make_unique<UseStmt>();
+        use_stmt->use_token = previousToken();
+        use_stmt->module_name = consume(TokenType::Identifier, "expected module name. found: " + peekToken().lexeme);
+        finishStatement("expected newline after use statement");
+
+        return use_stmt;
     }
 
     std::unique_ptr<FunctionStmt> Parser::parseFunctionDeclaration(){

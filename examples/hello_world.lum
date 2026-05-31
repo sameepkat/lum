@@ -1,2 +1,7 @@
-x = false or 5
-print(x)
+max = 100000
+x = 0
+
+while x < max {
+      __emit(x, true, false)
+      x = x + 1
+}

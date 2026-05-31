@@ -46,4 +46,8 @@ namespace lum{
     return false;
   }
 
+  std::unordered_map<std::string, Value> Environment::snapshotBindings() const {
+    return values;
+  }
+
 }

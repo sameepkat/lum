@@ -1,5 +1,8 @@
 #include "lum/visitors/interpreter.hpp"
+#include "lum/frontend/ast/program.hpp"
+#include "lum/frontend/ast/stmt.hpp"
 #include "lum/frontend/lexer/token.hpp"
+#include "lum/frontend/parser/parser.hpp"
 #include "lum/runtime/environment.hpp"
 #include "lum/error/error.hpp"
 #include "lum/runtime/return_signal.hpp"
@@ -7,10 +10,14 @@
 #include "lum/runtime/function.hpp"
 #include "lum/runtime/native_function.hpp"
 #include "lum/stdlib/core_lib.hpp"
+#include "lum/frontend/lexer/lexer.hpp"
+#include "lum/runtime/module_resolver.hpp"
 #include <cmath>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <iostream>
+#include <sstream>
 
 namespace lum {
     Interpreter::Interpreter() {
@@ -269,8 +276,9 @@ namespace lum {
       auto block_env = std::make_shared<Environment>(environment);
       executeBlock(stmt.statements, block_env);
     }
-    void Interpreter::visitFunctionStmt(FunctionStmt &stmt) {
-      auto func = std::make_shared<LumFunction>(stmt, environment);
+  void Interpreter::visitFunctionStmt(FunctionStmt &stmt){
+      auto definition = std::make_shared<FunctionDef>(stmt.func_name.lexeme, stmt.params, stmt.function_block->cloneBlock());
+      auto func = std::make_shared<LumFunction>(definition, environment);
       this->environment->define(stmt.func_name.lexeme, Value(func));
 
     }
@@ -301,6 +309,35 @@ namespace lum {
       while(condition.isTruthy()) {
         visitBlockStmt(*stmt.while_block);
         condition = evaluate(*stmt.condition);
+      }
+    }
+
+    void Interpreter::visitUseStmt(UseStmt &stmt) {
+      std::ifstream f_module(resolveStdModule( stmt.module_name.lexeme ));
+      if (!f_module) lum::Error::throw_and_return("can't find module: " + stmt.module_name.lexeme, stmt.use_token.line, stmt.use_token.column);
+
+      std::stringstream buffer;
+      buffer << f_module.rdbuf();
+
+      lum::Lexer module_lexer(buffer.str());
+      std::vector<lum::Token> module_tokens = module_lexer.scanTokens();
+
+      lum::Parser parser(module_tokens);
+      std::unique_ptr<lum::Program> program = parser.parse();
+
+
+      // interpret(*program);
+      auto import_target = environment;
+      auto module_env = std::make_shared<Environment>(globals);
+
+      EnvironmentGuard guard(*this, module_env);
+      for (auto &statement : program->statements) {
+        execute(*statement);
+      }
+
+      auto exports = module_env->snapshotBindings();
+      for (const auto &[key, value] : exports) {
+        import_target->define(key, value);
       }
     }
 
@@ -339,5 +376,6 @@ namespace lum {
         new_line ? std::cout << text << "\n" : std::cout << text;
       }
     }
+
 
 }

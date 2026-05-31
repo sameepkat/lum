@@ -10,11 +10,13 @@ namespace lum{
         public:
         virtual ~Expr() = default;
         virtual void accept(ExprVisitor& visitor) = 0;
+        virtual std::unique_ptr<Expr> clone() const = 0;
     };
 
     class LiteralExpr: public Expr{
         public:
         void accept(ExprVisitor& visitor) override;
+        std::unique_ptr<Expr> clone() const override;
 
         Token value;
     };
@@ -22,6 +24,7 @@ namespace lum{
     class VariableExpr: public Expr{
         public:
         void accept(ExprVisitor& visitor) override;
+        std::unique_ptr<Expr> clone() const override;
 
         Token name;
     };
@@ -29,6 +32,7 @@ namespace lum{
     class UnaryExpr: public Expr{
         public:
         void accept(ExprVisitor& visitor) override;
+        std::unique_ptr<Expr> clone() const override;
 
         Token unary_operator;
         std::unique_ptr<Expr> right_expression;
@@ -36,6 +40,7 @@ namespace lum{
     class CallExpr: public Expr{
         public:
         void accept(ExprVisitor& visitor) override;
+        std::unique_ptr<Expr> clone() const override;
 
         Token paren;
         std::unique_ptr<Expr> callee;
@@ -43,6 +48,7 @@ namespace lum{
     };
     class AssignExpr: public Expr{
         public:
+        std::unique_ptr<Expr> clone() const override;
         void accept(ExprVisitor& visitor) override;
 
         Token name;
@@ -51,6 +57,7 @@ namespace lum{
 
     class BinaryExpr: public Expr{
         public:
+        std::unique_ptr<Expr> clone() const override;
         void accept(ExprVisitor& visitor) override;
 
         std::unique_ptr<Expr> left_expression;
@@ -61,6 +68,7 @@ namespace lum{
     class LogicalExpr: public Expr {
         public:
         void accept(ExprVisitor& visitor) override;
+        std::unique_ptr<Expr> clone() const override;
 
         std::unique_ptr<Expr> left_expression;
         Token logic_token;
@@ -71,6 +79,7 @@ namespace lum{
     class ArrayExpr: public Expr {
     public:
       void accept(ExprVisitor& visitor) override;
+        std::unique_ptr<Expr> clone() const override;
 
       // std::unique_ptr<Expr> arr_var;
       Token bracket;
@@ -80,6 +89,7 @@ namespace lum{
     class IndexExpr : public Expr {
     public:
       void accept(ExprVisitor& visitor) override;
+      std::unique_ptr<Expr> clone() const override;
 
       std::unique_ptr<Expr> target;
       std::unique_ptr<Expr> index;
@@ -89,13 +99,13 @@ namespace lum{
     class SetIndexExpr: public Expr{
     public:
         void accept(ExprVisitor& visitor) override;
+        std::unique_ptr<Expr> clone() const override;
 
         std::unique_ptr<Expr> target;
         std::unique_ptr<Expr> index;
         std::unique_ptr<Expr> value;
         Token right_bracket;
     };
-
     // class ObjectExpr: public Expr{};
     // class PipelineExpr: public Expr{};
     // class PropertyExpr: public Expr{};

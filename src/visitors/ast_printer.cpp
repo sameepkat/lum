@@ -166,16 +166,29 @@ namespace lum{
 
       for (int i=0;  i < expr.array_elements.size() ; ++i) {
         expr.array_elements[i]->accept(*this);
-        indent--;
-        }
-        indent--;
+      }
+
+      indent--;
+      indent--;
     }
 
     void ASTPrinter::visitIndexExpr(IndexExpr &expr) {
       printIndent();
       std::cout << "Index\n";
       indent++;
-      expr.accept(*this);
+
+      printIndent();
+      std::cout << "Target\n";
+      indent++;
+      expr.target->accept(*this);
+      indent--;
+
+      printIndent();
+      std::cout << "Element\n";
+      indent++;
+      expr.index->accept(*this);
+      indent--;
+
       indent--;
         }
 
@@ -183,7 +196,36 @@ namespace lum{
       printIndent();
       std::cout << "SetIndex\n";
       indent++;
-      expr.accept(*this);
+
+      printIndent();
+      std::cout << "Target\n";
+      indent++;
+      expr.target->accept(*this);
+      indent--;
+
+      printIndent();
+      std::cout << "Index\n";
+      indent++;
+      expr.index->accept(*this);
+      indent--;
+
+      printIndent();
+      std::cout << "Value\n";
+      indent++;
+      expr.value->accept(*this);
+      indent--;
+
       indent--;
         }
+
+    void ASTPrinter::visitUseStmt(UseStmt& stmt) {
+      printIndent();
+      std::cout << "Use\n";
+      indent++;
+
+      printIndent();
+      std::cout << stmt.module_name.lexeme << "\n";
+      indent--;
+
+       }
 }

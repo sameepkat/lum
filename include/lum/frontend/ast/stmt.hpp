@@ -10,23 +10,28 @@ namespace lum{
         public:
         virtual ~Stmt() = default;
         virtual void accept(StmtVisitor& visitor) = 0;
+        virtual std::unique_ptr<Stmt> clone() const = 0;
     };
 
     class ExpressionStmt: public Stmt{
         public:
         void accept(StmtVisitor& visitor) override;
+        std::unique_ptr<Stmt> clone() const override;
 
         std::unique_ptr<Expr> expression;
     };
     class BlockStmt: public Stmt{
         public:
         void accept(StmtVisitor& visitor) override;
+        std::unique_ptr<Stmt> clone() const override;
+        std::unique_ptr<BlockStmt> cloneBlock() const;
 
         std::vector<std::unique_ptr<Stmt>> statements;
     };
     class FunctionStmt: public Stmt{
         public:
         void accept(StmtVisitor& visitor) override;
+        std::unique_ptr<Stmt> clone() const override;
 
         Token func_name;
         std::vector<Token> params;
@@ -36,6 +41,7 @@ namespace lum{
     class ReturnStmt: public Stmt{
         public:
         void accept(StmtVisitor& visitor) override;
+        std::unique_ptr<Stmt> clone() const override;
 
             Token return_token; // Not strictly needed, Useful for error messages/ location
             std::unique_ptr<Expr> return_expr;
@@ -44,6 +50,7 @@ namespace lum{
     class IfStmt: public Stmt{
         public:
         void accept(StmtVisitor& visitor) override;
+        std::unique_ptr<Stmt> clone() const override;
 
         Token if_token;
         std::unique_ptr<Expr> condition;
@@ -54,12 +61,19 @@ namespace lum{
     class WhileStmt: public Stmt{
         public:
         void accept(StmtVisitor& visitor) override;
+        std::unique_ptr<Stmt> clone() const override;
 
         Token while_token;
         std::unique_ptr<Expr> condition;
         std::unique_ptr<BlockStmt> while_block;
     };
-//     class forstmt: public stmt{}; // no for loop. Not gonna use
-//     class usestmt: public stmt{};
+  class UseStmt: public Stmt{
+    public:
+        void accept(StmtVisitor& visitor) override;
+        std::unique_ptr<Stmt> clone() const override;
+
+        Token use_token;
+        Token module_name;
+  };
 //     class objectstmt: public stmt{};
 }

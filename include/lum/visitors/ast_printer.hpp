@@ -3,6 +3,7 @@
 #include "lum/frontend/ast/expr.hpp"
 #include "lum/frontend/ast/expr_visitor.hpp"
 #include "lum/frontend/ast/program.hpp"
+#include "lum/frontend/ast/stmt.hpp"
 #include "lum/frontend/ast/stmt_visitor.hpp"
 
 namespace lum{
@@ -36,11 +37,15 @@ namespace lum{
 
             void visitWhileStmt(WhileStmt& stmt) override;
 
+            void visitUseStmt(UseStmt& stmt) override;
+
             void visitArrayExpr(ArrayExpr& expr) override;
 
             void visitIndexExpr(IndexExpr& expr) override;
 
             void visitSetIndexExpr(SetIndexExpr& expr) override;
+
+
 
         private:
             int indent = 0;

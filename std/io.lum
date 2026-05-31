@@ -1,0 +1,15 @@
+fn print(msg) {
+   __emit(msg, false, false)
+}
+
+fn println(msg){
+   __emit(msg, true, false)
+}
+
+fn print_err(msg){
+   __emit(msg, false, true)
+}
+
+fn println_err(msg){
+   __emit(msg, true, true)
+}

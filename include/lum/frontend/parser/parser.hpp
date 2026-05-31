@@ -38,7 +38,7 @@ namespace lum{
             std::unique_ptr<Stmt> parseDeclaration();
             std::unique_ptr<BlockStmt> parseBlock();
             std::unique_ptr<FunctionStmt> parseFunctionDeclaration();
-            // parseUseDeclaration();
+            std::unique_ptr<UseStmt> parseUseStatement();
             // parseObjectDeclaration();
 
             std::unique_ptr<Stmt> parseStatement();

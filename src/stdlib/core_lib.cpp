@@ -1,12 +1,11 @@
 #include "lum/stdlib/core_lib.hpp"
 #include "lum/error/error.hpp"
 #include "lum/runtime/native_function.hpp"
-#include <iostream>
+#include "lum/stdlib/array_lib.hpp"
 #include <memory>
-#include <stdexcept>
 
 namespace lum {
-  Value print_func(Interpreter &interpreter, const std::vector<Value> &args) {
+    Value print_func(Interpreter &interpreter, const std::vector<Value> &args) {
     interpreter.emit(args[0], true, false);
     return Value();
 }
@@ -24,14 +23,19 @@ namespace lum {
       return Value();
     }
 
+
     void installCoreLib(std::shared_ptr<Environment> globals) {
-      std::shared_ptr<NativeFunction> native_print =
-    std::make_shared<NativeFunction>(NativeFunction("__emit", 3, __emit));
-      std::shared_ptr<NativeFunction> native_print2 =
-    std::make_shared<NativeFunction>(NativeFunction("print", 1, print_func));
+      std::shared_ptr<NativeFunction> native_emit = std::make_shared<NativeFunction>(NativeFunction("__emit", 3, __emit));
+      std::shared_ptr<NativeFunction> native_print = std::make_shared<NativeFunction>(NativeFunction("print", 1, print_func));
+      std::shared_ptr<NativeFunction> len_func = std::make_shared<NativeFunction>(NativeFunction("__len", 1, __len));
+      std::shared_ptr<NativeFunction> push_func = std::make_shared<NativeFunction>(NativeFunction("__push", 2, __push));
+      std::shared_ptr<NativeFunction> pop_func = std::make_shared<NativeFunction>(NativeFunction("__pop", 1, __pop));
 
 
-      globals->define("__emit", Value(native_print));
-      globals->define("print", Value(native_print2));
+      globals->define("__emit", Value(native_emit));
+      globals->define("print", Value(native_print));
+      globals->define("__len", Value(len_func));
+      globals->define("__push", Value(push_func));
+      globals->define("__pop", Value(pop_func));
     }
 }

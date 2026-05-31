@@ -40,7 +40,6 @@ int main(int argc, char** argv){
     lum::ASTPrinter printer;
 
     // printer.print(*program);
-
     lum::Interpreter interpreter;
 
     try {

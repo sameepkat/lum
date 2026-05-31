@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lum/frontend/ast/stmt.hpp"
 namespace lum{
     class ExpressionStmt;
     class BlockStmt;
@@ -7,6 +8,7 @@ namespace lum{
     class ReturnStmt;
     class IfStmt;
     class WhileStmt;
+    class UseStmt;
 
 
     class StmtVisitor{
@@ -19,5 +21,6 @@ namespace lum{
         virtual void visitReturnStmt(ReturnStmt& stmt) = 0;
         virtual void visitIfStmt(IfStmt& stmt) = 0;
         virtual void visitWhileStmt(WhileStmt& stmt) = 0;
+        virtual void visitUseStmt(UseStmt& stmt) = 0;
     };
 }
