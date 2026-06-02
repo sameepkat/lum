@@ -1,0 +1,2 @@
+person = { profile: { age: 20 } }
+__emit(person.profile.age, true, false)

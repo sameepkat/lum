@@ -1,0 +1,3 @@
+use array
+nums = []
+pop(nums)

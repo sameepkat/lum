@@ -25,6 +25,9 @@ namespace lum{
         virtual void visitArrayExpr(ArrayExpr& expr) = 0;
         virtual void visitIndexExpr(IndexExpr& expr) = 0;
         virtual void visitSetIndexExpr(SetIndexExpr& expr) = 0;
+        virtual void visitObjectExpr(ObjectExpr& expr) = 0;
+        virtual void visitPropertyExpr(PropertyExpr& expr) = 0;
+        virtual void visitSetPropertyExpr(SetPropertyExpr& expr) = 0;
     };
 
 }

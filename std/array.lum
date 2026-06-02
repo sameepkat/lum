@@ -1,0 +1,12 @@
+
+fn len(array){
+   return __len(array)
+}
+
+fn push(array, new_item){
+   return __push(array, new_item)
+}
+
+fn pop(array){
+   return __pop(array)
+}

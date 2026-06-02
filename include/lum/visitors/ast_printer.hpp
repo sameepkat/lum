@@ -45,6 +45,12 @@ namespace lum{
 
             void visitSetIndexExpr(SetIndexExpr& expr) override;
 
+            void visitObjectExpr(ObjectExpr& expr) override;
+
+            void visitPropertyExpr(PropertyExpr& expr) override;
+
+            void visitSetPropertyExpr(SetPropertyExpr& expr) override;
+
 
 
         private:

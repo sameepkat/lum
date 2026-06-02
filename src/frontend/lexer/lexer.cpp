@@ -226,7 +226,7 @@ namespace lum{
         if(peek() == '.' && std::isdigit(static_cast<unsigned char>(peekNext()))){
             advance();
 
-            while(std::isdigit(static_cast<unsigned char>(peekNext()))){
+            while(std::isdigit(static_cast<unsigned char>(peek()))){
                 advance();
             }
         }

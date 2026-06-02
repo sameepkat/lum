@@ -43,6 +43,18 @@ namespace lum{
             visitor.visitSetIndexExpr(*this);
         }
 
+    void ObjectExpr::accept(ExprVisitor& visitor){
+            visitor.visitObjectExpr(*this);
+    }
+
+    void PropertyExpr::accept(ExprVisitor& visitor){
+            visitor.visitPropertyExpr(*this);
+    }
+
+    void SetPropertyExpr::accept(ExprVisitor& visitor){
+            visitor.visitSetPropertyExpr(*this);
+    }
+
     std::unique_ptr<Expr> LiteralExpr::clone() const{
       std::unique_ptr<LiteralExpr> expr = std::make_unique<LiteralExpr>();
       expr->value = value;
@@ -147,4 +159,47 @@ namespace lum{
 
       return expr;
     }
+
+      std::unique_ptr<Expr> ObjectExpr::clone() const{
+        auto expr = std::make_unique<ObjectExpr>();
+        expr->starting_brace = starting_brace;
+
+        for (const auto &item : items) {
+          if (item.value) {
+            ObjectField field;
+            field.key = item.key;
+            field.value = item.value->clone();
+            expr->items.push_back(std::move(field));
+          }
+        }
+
+        return expr;
+    }
+
+      std::unique_ptr<Expr> PropertyExpr::clone() const{
+        auto expr = std::make_unique<PropertyExpr>();
+        expr->dot = dot;
+        expr->key = key;
+        if (target) {
+          expr->target = target->clone();
+        }
+
+        return expr;
+    }
+
+      std::unique_ptr<Expr> SetPropertyExpr::clone() const{
+        auto expr = std::make_unique<SetPropertyExpr>();
+        expr->dot = dot;
+        expr->key = key;
+
+        if (target)
+          expr->target = target->clone();
+
+        if (value)
+          expr->value = value->clone();
+
+        return expr;
+    }
+
+
 }

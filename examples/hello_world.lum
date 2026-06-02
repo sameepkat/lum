@@ -1,7 +1,4 @@
-max = 100000
-x = 0
+x = 4.5
+y = 304.342
 
-while x < max {
-      __emit(x, true, false)
-      x = x + 1
-}
+print(x+y)

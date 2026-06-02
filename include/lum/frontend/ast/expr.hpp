@@ -5,6 +5,13 @@
 #include <vector>
 
 namespace lum{
+
+    class Expr; 
+    struct ObjectField{
+        Token key;
+        std::unique_ptr<Expr> value;
+    };
+  
     class ExprVisitor; // Forward Declaration
     class Expr{
         public:
@@ -106,7 +113,35 @@ namespace lum{
         std::unique_ptr<Expr> value;
         Token right_bracket;
     };
-    // class ObjectExpr: public Expr{};
+
+    class ObjectExpr: public Expr{
+    public:
+        void accept(ExprVisitor& visitor) override;
+        std::unique_ptr<Expr> clone() const override;
+      
+        Token starting_brace;
+        std::vector<ObjectField> items;
+    };
+
+    class PropertyExpr: public Expr{
+    public: 
+        void accept(ExprVisitor& visitor) override;
+        std::unique_ptr<Expr> clone() const override;
+
+        Token dot;
+        std::unique_ptr<Expr> target;
+        Token key;
+    };
+
+    class SetPropertyExpr: public Expr{
+    public: 
+        void accept(ExprVisitor& visitor) override;
+        std::unique_ptr<Expr> clone() const override;
+
+        Token dot;
+        std::unique_ptr<Expr> target;
+        Token key;
+        std::unique_ptr<Expr> value;
+    };
     // class PipelineExpr: public Expr{};
-    // class PropertyExpr: public Expr{};
 }

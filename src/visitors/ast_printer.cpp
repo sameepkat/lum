@@ -228,4 +228,73 @@ namespace lum{
       indent--;
 
        }
+
+
+    void ASTPrinter::visitObjectExpr(ObjectExpr &expr) {
+        printIndent();
+        std::cout << "Object\n";
+        indent++;
+
+        printIndent();
+        std::cout << "Fields\n";
+        indent++;
+
+        for (const auto& field: expr.items) {
+          printIndent();
+          std::cout << "Field: " << field.key.lexeme << "\n";
+          indent++;
+          if (field.value) field.value->accept(*this);
+          indent--;
+        }
+
+        indent--;
+        indent--;
+    }
+
+    void ASTPrinter::visitPropertyExpr(PropertyExpr &expr) {
+    printIndent();
+    std::cout << "Property\n";
+    indent++;
+
+    printIndent();
+    std::cout << "Target\n";
+    indent++;
+    expr.target->accept(*this);
+    indent--;
+
+    printIndent();
+    std::cout << "Key\n";
+    indent++;
+    std::cout << expr.key.lexeme << "\n";
+    indent--;
+
+    indent--;
+    }
+
+    void ASTPrinter::visitSetPropertyExpr(SetPropertyExpr &expr) {
+    printIndent();
+    std::cout << "SetProperty\n";
+    indent++;
+
+    printIndent();
+    std::cout << "Target\n";
+    indent++;
+    expr.target->accept(*this);
+    indent--;
+
+    printIndent();
+    std::cout << "Key\n";
+    indent++;
+    std::cout << expr.key.lexeme <<"\n";
+    indent--;
+
+    printIndent();
+    std::cout << "Value\n";
+    indent++;
+    expr.value->accept(*this);
+    indent--;
+
+    indent--;
+
+    }
 }

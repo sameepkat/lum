@@ -4,6 +4,7 @@
 #include <string>
 #include <utility>
 #include <variant>
+#include <unordered_map>
 #include "lum/runtime/value.hpp"
 #include "lum/runtime/function.hpp"
 #include "lum/runtime/native_function.hpp"
@@ -18,6 +19,8 @@ namespace lum{
         Value::Value(std::shared_ptr<LumFunction> value): data(std::move(value)){}
         Value::Value(std::shared_ptr<NativeFunction> value): data(std::move(value)){}
         Value::Value(std::shared_ptr<std::vector<Value>> value): data(std::move(value)){}
+        Value::Value(std::shared_ptr<std::unordered_map<std::string, Value>> value): data(std::move(value)){}
+  
 
 
         std::string Value::toString() const{
@@ -44,6 +47,16 @@ namespace lum{
                   value += (*array)[i].toString();
                 }
               value += "]";
+            } else if (isObject()) {
+              value = "{\n";
+              auto object = asObject();
+              for (auto it = object->begin(); it != object->end(); ++it) {
+                if(it != object->begin()) value += ", \n";
+                value += (*it).first;
+                value += ": ";
+                value += (*it).second.toString();
+              }
+              value += "\n}";
             }
 
             return value;
@@ -74,6 +87,21 @@ namespace lum{
                   return false;
                 }
               }
+              return true;
+            } else if (isObject()) {
+              auto object = asObject();
+              if (!other.isObject())
+                return false;
+
+              auto other_object = other.asObject();
+
+              if (object->size() != other.asObject()->size())
+                return false;
+              for (const auto &pair : *object) {
+                auto it = other_object->find(pair.first);
+                if (it == other_object->end() || !it->second.equals(pair.second)) return false;
+              }
+
               return true;
             }
             return false;
@@ -125,5 +153,11 @@ namespace lum{
         }
         std::shared_ptr<std::vector<Value>> Value::asArray() const {
             return std::get<std::shared_ptr<std::vector<Value>>>(data);
+        }
+        bool Value::isObject() const {
+          return std::holds_alternative<std::shared_ptr<std::unordered_map<std::string, Value>>>(data);
+        }
+        std::shared_ptr<std::unordered_map<std::string, Value>> Value::asObject() const {
+            return std::get<std::shared_ptr<std::unordered_map<std::string, Value>>>(data);
         }
 }

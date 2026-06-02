@@ -1,7 +1,9 @@
 #pragma once
 
+#include "lum/frontend/ast/expr.hpp"
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <variant>
 #include <vector>
 
@@ -17,7 +19,8 @@ namespace lum{
         std::string,
         std::shared_ptr<LumFunction>,
         std::shared_ptr<NativeFunction>,
-        std::shared_ptr<std::vector<Value>>
+        std::shared_ptr<std::vector<Value>>,
+        std::shared_ptr<std::unordered_map<std::string, Value>>
     >;
 
     class Value{
@@ -29,6 +32,7 @@ namespace lum{
             Value(std::shared_ptr<LumFunction> value);
             Value(std::shared_ptr <NativeFunction> value);
             Value(std::shared_ptr<std::vector<Value>> value);
+            Value(std::shared_ptr<std::unordered_map<std::string, Value>> value);
 
 
             std::string toString() const;
@@ -43,6 +47,8 @@ namespace lum{
             bool asBool() const;
             bool isArray() const;
             std::shared_ptr<std::vector<Value>> asArray() const;
+            bool isObject() const;
+            std::shared_ptr<std::unordered_map<std::string, Value>> asObject() const;
 
             bool isCallable() const;
 

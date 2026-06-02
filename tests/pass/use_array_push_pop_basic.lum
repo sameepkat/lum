@@ -1,0 +1,7 @@
+use array
+use io
+nums = [1, 2]
+push(nums, 3)
+println(nums)
+println(pop(nums))
+println(nums)

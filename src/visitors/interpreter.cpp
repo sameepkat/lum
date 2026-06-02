@@ -18,6 +18,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <unordered_map>
 
 namespace lum {
     Interpreter::Interpreter() {
@@ -262,7 +263,48 @@ namespace lum {
       this->evaluated_value = evaluate(*expr.value);
       (*target.asArray())[exact_index] = this->evaluated_value;
     }
-    // produce side effects
+
+    void Interpreter::visitObjectExpr(ObjectExpr &expr) {
+        auto object = std::make_shared<std::unordered_map<std::string, Value>>();
+        for (auto& item: expr.items) {
+          object->insert_or_assign(item.key.lexeme, evaluate(*item.value));
+        }
+
+        this->evaluated_value = std::move(object);
+    }
+    void Interpreter::visitPropertyExpr(PropertyExpr &expr) { // a.hello
+        auto target = evaluate(*expr.target);
+        Value val;
+        if (!target.isObject()) lum::Error::throw_and_return("target not an object", expr.dot.line, expr.dot.column);
+
+        auto object = target.asObject();
+
+        std::string key = expr.key.lexeme;
+
+        auto it = object->find(key);
+        if(it == object->end())
+            lum::Error::throw_and_return("no key " + key , expr.dot.line, expr.dot.column);
+
+        val = it->second;
+
+        this->evaluated_value = val;
+
+    }
+    void Interpreter::visitSetPropertyExpr(SetPropertyExpr &expr) {
+      // a.name = "Sameep"
+      auto target = evaluate(*expr.target);
+      Value val;
+      if (!target.isObject()) lum::Error::throw_and_return("target not an object", expr.dot.line, expr.dot.column);
+
+      auto object = target.asObject();
+      std::string key = expr.key.lexeme;
+
+      val = evaluate(*expr.value);
+
+      this->evaluated_value = val;
+      object->insert_or_assign(key, val);
+    }
+  
     void Interpreter::visitExpressionStmt(ExpressionStmt &stmt) {
       Value result = evaluate(*stmt.expression);
       if (interactive_mode) {

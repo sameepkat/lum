@@ -1,0 +1,3 @@
+use array
+x = 10
+push(x, 1)

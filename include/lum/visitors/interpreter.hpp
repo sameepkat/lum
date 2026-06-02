@@ -30,6 +30,9 @@ namespace lum{
             void visitArrayExpr(ArrayExpr& expr) override;
             void visitIndexExpr(IndexExpr& expr) override;
             void visitSetIndexExpr(SetIndexExpr& expr) override;
+            void visitObjectExpr(ObjectExpr& expr) override;
+            void visitPropertyExpr(PropertyExpr& expr) override;
+            void visitSetPropertyExpr(SetPropertyExpr& expr) override;
 
             // produce side effects
             void visitExpressionStmt(ExpressionStmt& stmt) override;

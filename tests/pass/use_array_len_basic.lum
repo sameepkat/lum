@@ -1,0 +1,5 @@
+use array
+use io
+nums = [1, 2, 3]
+println(len(nums))
+println(len("hello"))

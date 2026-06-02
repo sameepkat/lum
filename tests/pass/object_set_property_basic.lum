@@ -1,0 +1,3 @@
+person = { name: "sam" }
+person.name = "joe"
+__emit(person.name, true, false)

@@ -1,0 +1,2 @@
+person = { name: "sam" }
+__emit(person.age, true, false)

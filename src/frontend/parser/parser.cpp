@@ -109,7 +109,8 @@ namespace lum{
 
         while(!check(TokenType::RightBrace) && !isTokEOF()){
             skipNewLines();
-            if(isTokEOF()) break;
+            if(check(TokenType::RightBrace) || isTokEOF()) break;
+
             auto decl = parseDeclaration();
             if(decl) block->statements.push_back(std::move(decl));
             // else advanceToken();
@@ -171,6 +172,14 @@ namespace lum{
              assign->index = std::move(arr->index);
              assign->value = std::move(value);
              assign->right_bracket = std::move(arr->right_bracket);
+
+             return assign;
+           } else if (auto *object = dynamic_cast<PropertyExpr *>(expr.get())) {
+             auto assign = std::make_unique<SetPropertyExpr>();
+             assign->dot = object->dot;
+             assign->key = object->key;
+             assign->target = std::move(object->target);
+             assign->value = std::move(value);
 
              return assign;
            }
@@ -325,8 +334,12 @@ namespace lum{
               auto arr = parseIndex(std::move(expr));
 
               expr = std::move(arr);
+            } else if (match(TokenType::Dot)) {
+              auto obj = parseProperty(std::move(expr));
 
-            } else {
+              expr = std::move(obj);
+            }
+            else {
                 break;
             }
         }
@@ -341,6 +354,15 @@ namespace lum{
       index_expr->right_bracket = consume(TokenType::RightBracket, "expected ']' after array index ");
 
       return index_expr;
+    }
+
+    std::unique_ptr<Expr> Parser::parseProperty(std::unique_ptr<Expr> target) {
+      auto property_expr = std::make_unique<PropertyExpr>();
+      property_expr->dot = previousToken();
+      property_expr->target = std::move(target);
+      property_expr->key = consume(TokenType::Identifier, "Expected object's key indentifier");
+
+      return property_expr;
     }
 
     std::unique_ptr<ReturnStmt> Parser::parseReturn(){
@@ -380,7 +402,6 @@ namespace lum{
         consume(TokenType::LeftBrace, "expect '{' after while condition");
         stmt->while_block = parseBlock();
 
-
         return stmt;
     }
 
@@ -410,6 +431,11 @@ namespace lum{
             return expr;
         }
 
+        if (match(TokenType::LeftBrace)) {
+            auto expr = parseObject();
+            return expr;
+        }
+
         lum::Error::throw_parse("expected expression", peekToken().line, peekToken().column);
     }
 
@@ -425,6 +451,27 @@ namespace lum{
             consume(TokenType::RightBracket, "expect ']' after array elements.");
 
       return array;
+    }
+
+    std::unique_ptr<Expr> Parser::parseObject() {
+      auto object = std::make_unique<ObjectExpr>();
+      object->starting_brace = previousToken();
+
+      while (!check(TokenType::RightBrace) && !isTokEOF()) {
+        ObjectField new_field;
+        new_field.key = consume(TokenType::Identifier, "expected key of the object");
+
+        consume(TokenType::Colon, "expected ':' between key and value pairs in an object");
+
+        new_field.value = parseExpression();
+        object->items.push_back(std::move(new_field));
+
+        if(!match(TokenType::Comma)) break;
+      }
+
+      consume(TokenType::RightBrace, "expect '}' after object");
+
+      return object;
     }
 
    std::unique_ptr<Program>  Parser::parse(){

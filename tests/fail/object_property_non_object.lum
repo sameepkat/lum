@@ -1,0 +1,2 @@
+x = 10
+__emit(x.name, true, false)
