@@ -1,2 +1,10 @@
-person = { profile: { age: 20 } }
-__emit(person.profile.age, true, false)
+use io
+
+person = {
+       profile: {
+                name: "Loom",
+                age: 20
+                }
+       }
+print (person.profile.name)
+println(person.profile.age)

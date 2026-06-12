@@ -432,6 +432,7 @@ namespace lum{
         }
 
         if (match(TokenType::LeftBrace)) {
+            skipNewLines();
             auto expr = parseObject();
             return expr;
         }
@@ -467,7 +468,9 @@ namespace lum{
         object->items.push_back(std::move(new_field));
 
         if(!match(TokenType::Comma)) break;
+        skipNewLines();
       }
+      skipNewLines();
 
       consume(TokenType::RightBrace, "expect '}' after object");
 

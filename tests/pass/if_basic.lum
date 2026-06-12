@@ -1,3 +1,5 @@
+use io
+
 x = 5
 if(true){
   x = x + 5

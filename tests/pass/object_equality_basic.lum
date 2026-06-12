@@ -1,1 +1,8 @@
-__emit({ a: 1 } == { a: 1 }, true, false)
+use io
+
+x = {
+  a : 1
+}
+y = {a : 1
+}
+println(x == y)
