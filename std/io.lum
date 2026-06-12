@@ -13,3 +13,7 @@ fn print_err(msg){
 fn println_err(msg){
    __emit(msg, true, true)
 }
+
+fn input(){
+   return __input()
+}

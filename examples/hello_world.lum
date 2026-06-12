@@ -1,4 +1,10 @@
-x = 4.5
-y = 304.342
+use io
+use array
 
-print(x+y)
+fn san_sayer(){
+  return "san"
+}
+arr = [1,2,3,4,5]
+x = {len: len}
+
+print(x.len(arr))
