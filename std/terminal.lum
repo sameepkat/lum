@@ -1,0 +1,19 @@
+fn clear(){
+   __clear()
+}
+
+fn cursor_up(num){
+   __cursor_up(num)
+}
+
+fn hide_cursor(){
+   __hide_cursor()
+}
+
+fn show_cursor(){
+   __show_cursor()
+}
+
+fn flush(){
+   __flush()
+}

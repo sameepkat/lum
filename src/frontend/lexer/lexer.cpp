@@ -117,6 +117,11 @@ namespace lum{
             case ':':
                 addToken(TokenType::Colon);
                 break;
+            case '#':
+								while(peek() != '\n' && !isAtEnd()){
+										advance();
+								}
+							break;
             case '+':
                 addToken(TokenType::Plus);
                 break;
@@ -127,13 +132,7 @@ namespace lum{
                 addToken(TokenType::Star);
                 break;
             case '/':
-                if(match('/')){
-                    while(peek() != '\n' && !isAtEnd()){
-                        advance();
-                    }
-                }else{
-                    addToken(TokenType::Slash);
-                }
+								addToken(TokenType::Slash);
                 break;
             case '%':
                 addToken(TokenType::Percent);

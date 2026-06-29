@@ -1,0 +1,3 @@
+fn sleep_ms(time){
+   return __sleep(time)
+}

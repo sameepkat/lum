@@ -17,3 +17,7 @@ fn println_err(msg){
 fn input(){
    return __input()
 }
+
+fn clear(){
+   __clear()
+}

@@ -30,6 +30,7 @@ namespace lum{
         char advance();
         char peek() const;
         char peekNext() const;
+				void skipLine();
 
         bool match(char expected);
 

@@ -10,3 +10,21 @@ fn push(array, new_item){
 fn pop(array){
    return __pop(array)
 }
+
+fn fill(array, fill_with){
+   i = 0
+   while i < len(array){
+     array[i] = fill_with
+     i = i+1
+   }
+}
+
+fn array(len, fill_with){
+   i = 0
+   arr = []
+   while i < len{
+     push(arr, fill_with)
+     i = i + 1
+   }
+   return arr
+}

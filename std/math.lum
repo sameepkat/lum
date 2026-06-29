@@ -1,0 +1,19 @@
+fn sin(num){
+   return __sin(num)
+}
+
+fn cos(num){
+   return __cos(num)
+}
+
+fn tan(num){
+   return __tan(num)
+}
+
+fn floor(num){
+   return __floor(num)
+}
+
+fn ceil(num){
+   return __ceil(num)
+}
