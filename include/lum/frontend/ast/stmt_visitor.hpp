@@ -21,6 +21,8 @@ namespace lum{
         virtual void visitReturnStmt(ReturnStmt& stmt) = 0;
         virtual void visitIfStmt(IfStmt& stmt) = 0;
         virtual void visitWhileStmt(WhileStmt& stmt) = 0;
+        virtual void visitBreakStmt(BreakStmt& stmt) = 0;
+        virtual void visitContinueStmt(ContinueStmt& stmt) = 0;
         virtual void visitUseStmt(UseStmt& stmt) = 0;
     };
 }

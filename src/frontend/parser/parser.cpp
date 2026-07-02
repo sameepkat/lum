@@ -85,6 +85,8 @@ namespace lum{
     }
 
     std::unique_ptr<FunctionStmt> Parser::parseFunctionDeclaration(){
+				int temp = this->loopDepth;  
+				this->loopDepth = 0;    // to avoid break inside a function inside a loop
         this->functionDepth++;
         auto func = std::make_unique<FunctionStmt>();
 
@@ -101,6 +103,7 @@ namespace lum{
         func->function_block = parseBlock();
         this->functionDepth--;
 
+				this->loopDepth = temp;
         return func;
     }
 
@@ -124,6 +127,8 @@ namespace lum{
         if(match(TokenType::Return)) return parseReturn();
         if(match(TokenType::If)) return parseIf();
         if(match(TokenType::While)) return parseWhile();
+        if(match(TokenType::Break)) return parseBreak();
+        if(match(TokenType::Continue)) return parseContinue();
         if(match(TokenType::LeftBrace)){
             auto block = parseBlock();
             return block ? std::unique_ptr<Stmt>(block.release()) : nullptr;
@@ -397,12 +402,39 @@ namespace lum{
 
     std::unique_ptr<WhileStmt> Parser::parseWhile(){
         auto stmt = std::make_unique<WhileStmt>();
+
         stmt->while_token = previousToken();
         stmt->condition = parseExpression();
         consume(TokenType::LeftBrace, "expect '{' after while condition");
+				this->loopDepth++;
         stmt->while_block = parseBlock();
+				this->loopDepth--;
 
         return stmt;
+    }
+
+
+		std::unique_ptr<ContinueStmt> Parser::parseContinue() {
+			auto stmt = std::make_unique<ContinueStmt>();
+			stmt->continue_token = previousToken();
+
+			if (this->loopDepth <= 0) {
+							lum::Error::throw_parse("can't continue outside loop", previousToken().line, previousToken().column);
+			}
+      finishStatement("expected newline after continue");
+				return stmt;
+    }
+
+    std::unique_ptr<BreakStmt> Parser::parseBreak() {
+
+      auto stmt = std::make_unique<BreakStmt>();
+      stmt->break_token = previousToken();
+
+      if (this->loopDepth <= 0) {
+							lum::Error::throw_parse("can't break outside loop", previousToken().line, previousToken().column);
+      }
+      finishStatement("expected newline after break");
+			return stmt;
     }
 
     std::unique_ptr<Expr> Parser::parsePrimary(){

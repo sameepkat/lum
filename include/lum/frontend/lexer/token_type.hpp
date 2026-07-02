@@ -1,58 +1,59 @@
 namespace lum{
-    enum class TokenType{
-        LeftParen,
-        RightParen,
-        LeftBrace,
-        RightBrace,
-        LeftBracket,
-        RightBracket,
-        Comma,
-        Dot,
-        Colon,
+enum class TokenType {
+  LeftParen,
+  RightParen,
+  LeftBrace,
+  RightBrace,
+  LeftBracket,
+  RightBracket,
+  Comma,
+  Dot,
+  Colon,
 
-        // Operators
-        Plus,
-        Minus,
-        Star,
-        Slash,
-        Percent,
+  // Operators
+  Plus,
+  Minus,
+  Star,
+  Slash,
+  Percent,
 
-        // Comparison
-        Equal,
-        EqualEqual,
-        Bang,
-        BangEqual,
-        Greater,
-        GreaterEqual,
-        Less,
-        LessEqual,
+  // Comparison
+  Equal,
+  EqualEqual,
+  Bang,
+  BangEqual,
+  Greater,
+  GreaterEqual,
+  Less,
+  LessEqual,
 
-        // Logical
-        LogicalOR,
-        LogicalAND,
+  // Logical
+  LogicalOR,
+  LogicalAND,
 
-        // Pipeline
-        Arrow, // ->
+  // Pipeline
+  Arrow, // ->
 
-        // Literals
-        Identifier,
-        Number,
-        String,
+  // Literals
+  Identifier,
+  Number,
+  String,
 
-        // Keywords
-        Fn,
-        If,
-        Else,
-        While,
-        For,
-        Return,
-        True,
-        False,
-        Nil,
+  // Keywords
+  Fn,
+  If,
+  Else,
+  While,
+  Continue,
+  Break,
+	Return,
+	True,
+	False,
+	Nil,
 
-        // Special
-        EndOfFile,
-        Use,
-        NewLine
-    };
+	// Special
+	EndOfFile,
+	Use,
+	NewLine
+};
 }

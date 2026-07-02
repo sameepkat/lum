@@ -5,6 +5,7 @@
 #include "lum/frontend/parser/parser.hpp"
 #include "lum/runtime/environment.hpp"
 #include "lum/error/error.hpp"
+#include "lum/runtime/loop_signal.hpp"
 #include "lum/runtime/return_signal.hpp"
 #include "lum/runtime/value.hpp"
 #include "lum/runtime/function.hpp"
@@ -347,11 +348,23 @@ namespace lum {
     }
 
     void Interpreter::visitWhileStmt(WhileStmt &stmt) {
-      auto condition = evaluate(*stmt.condition);
-      while(condition.isTruthy()) {
-        visitBlockStmt(*stmt.while_block);
-        condition = evaluate(*stmt.condition);
+      while(evaluate(*stmt.condition).isTruthy()) {
+        try {
+						visitBlockStmt(*stmt.while_block);
+        } catch (BreakSignal &) {
+						break;
+        } catch (ContinueSignal &) {
+						continue;
+        }
       }
+    }
+
+    void Interpreter::visitBreakStmt(BreakStmt &stmt) {
+						throw BreakSignal();
+    }
+
+    void Interpreter::visitContinueStmt(ContinueStmt &stmt) {
+						throw ContinueSignal();
     }
 
     void Interpreter::visitUseStmt(UseStmt &stmt) {

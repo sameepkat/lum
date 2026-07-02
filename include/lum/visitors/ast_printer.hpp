@@ -37,6 +37,10 @@ namespace lum{
 
             void visitWhileStmt(WhileStmt& stmt) override;
 
+            void visitBreakStmt(BreakStmt& stmt) override;
+
+            void visitContinueStmt(ContinueStmt& stmt) override;
+
             void visitUseStmt(UseStmt& stmt) override;
 
             void visitArrayExpr(ArrayExpr& expr) override;

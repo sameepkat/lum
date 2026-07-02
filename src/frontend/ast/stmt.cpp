@@ -31,6 +31,14 @@ namespace lum{
        visitor.visitUseStmt(*this);
     }
 
+    void BreakStmt::accept(StmtVisitor &visitor) {
+				visitor.visitBreakStmt(*this);	
+    }
+
+    void ContinueStmt::accept(StmtVisitor &visitor) {
+				visitor.visitContinueStmt(*this);
+    }
+
     std::unique_ptr<Stmt> ExpressionStmt::clone() const {
       auto stmt = std::make_unique<ExpressionStmt>();
       if (expression)
@@ -111,6 +119,20 @@ namespace lum{
     if (while_block)
       stmt->while_block = while_block->cloneBlock();
     return stmt;
+    }
+
+  std::unique_ptr<Stmt> BreakStmt::clone() const {
+		auto stmt = std::make_unique<BreakStmt>();
+		stmt->break_token = break_token;
+
+		return stmt;
+    }
+
+  std::unique_ptr<Stmt> ContinueStmt::clone() const {
+    auto stmt = std::make_unique<ContinueStmt>();
+		stmt->continue_token = continue_token;
+
+		return stmt;
     }
 
   std::unique_ptr<Stmt> UseStmt::clone() const {

@@ -45,6 +45,8 @@ namespace lum{
             std::unique_ptr<ReturnStmt> parseReturn();
             std::unique_ptr<IfStmt> parseIf();
             std::unique_ptr<WhileStmt> parseWhile();
+            std::unique_ptr<BreakStmt> parseBreak();
+            std::unique_ptr<ContinueStmt> parseContinue();
             std::unique_ptr<ExpressionStmt> parseExpressionStmt();
 
             std::unique_ptr<Expr> parseExpression();
@@ -66,6 +68,7 @@ namespace lum{
 
 
       int functionDepth = 0;
+      int loopDepth = 0;
 
     };
 }

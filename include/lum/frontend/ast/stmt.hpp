@@ -75,5 +75,20 @@ namespace lum{
         Token use_token;
         Token module_name;
   };
-//     class objectstmt: public stmt{};
+
+  class BreakStmt: public Stmt {
+  public:
+    void accept(StmtVisitor& visitor) override;
+    std::unique_ptr<Stmt> clone() const override;
+
+    Token break_token;
+  };
+
+  class ContinueStmt: public Stmt {
+  public:
+    void accept(StmtVisitor &visitor) override;
+    std::unique_ptr<Stmt> clone() const override;
+
+    Token continue_token;
+  };
 }

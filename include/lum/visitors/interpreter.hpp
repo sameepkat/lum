@@ -41,6 +41,8 @@ namespace lum{
             void visitReturnStmt(ReturnStmt& stmt) override;
             void visitIfStmt(IfStmt& stmt) override;
             void visitWhileStmt(WhileStmt& stmt) override;
+            void visitBreakStmt(BreakStmt& stmt) override;
+            void visitContinueStmt(ContinueStmt& stmt) override;
             void visitUseStmt(UseStmt& stmt) override;
 
             class EnvironmentGuard { // For RAII
