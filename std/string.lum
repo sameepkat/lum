@@ -1,0 +1,8 @@
+
+fn string(val){
+   return __to_string(val)
+}
+
+fn number(val){
+   return __to_number(val)
+}

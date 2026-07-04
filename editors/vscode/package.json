@@ -1,0 +1,36 @@
+{
+  "name": "lum",
+  "displayName": "Lum",
+  "description": "Syntax highlighting for the Lum programming language",
+  "version": "0.0.1",
+  "publisher": "sameep",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "lum",
+        "aliases": [
+          "Lum",
+          "lum"
+        ],
+        "extensions": [
+          ".lum"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "lum",
+        "scopeName": "source.lum",
+        "path": "./lum.tmLanguage.json"
+      }
+    ]
+  },
+  "icon": "lum.png"
+}

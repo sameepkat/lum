@@ -6,6 +6,7 @@
 #include "lum/stdlib/math_lib.hpp"
 #include "lum/stdlib/time_lib.hpp"
 #include "lum/stdlib/terminal_lib.hpp"
+#include "lum/stdlib/string_lib.hpp"
 #include <memory>
 
 namespace lum {
@@ -40,6 +41,8 @@ namespace lum {
       std::shared_ptr<NativeFunction> hide_cursor_func = std::make_shared<NativeFunction>(NativeFunction("__hide_cursor", 0, __hide_cursor));
       std::shared_ptr<NativeFunction> show_cursor_func = std::make_shared<NativeFunction>(NativeFunction("__show_cursor", 0, __show_cursor));
       std::shared_ptr<NativeFunction> flush_func = std::make_shared<NativeFunction>(NativeFunction("__flush", 0, __flush));
+      std::shared_ptr<NativeFunction> string_func = std::make_shared<NativeFunction>(NativeFunction("__to_string", 1, __to_string));
+      std::shared_ptr<NativeFunction> number_func = std::make_shared<NativeFunction>(NativeFunction("__to_number", 1, __to_number));
 
 
       globals->define("__emit", Value(native_emit));
@@ -58,5 +61,7 @@ namespace lum {
       globals->define("__hide_cursor", Value(hide_cursor_func));
       globals->define("__show_cursor", Value(show_cursor_func));
       globals->define("__flush", Value(flush_func));
+      globals->define("__to_string", Value(string_func));
+      globals->define("__to_number", Value(number_func));
     }
 }
