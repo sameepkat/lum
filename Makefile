@@ -11,6 +11,9 @@ BIN_DIR := $(BUILD_DIR)/bin
 
 TARGET := $(BIN_DIR)/$(PROJECT_NAME)
 
+PREFIX ?= /usr/local
+
+CPPFLAGS := -I$(INCLUDE_DIR) -DLUM_STD_PATH=\"$(PREFIX)/share/lum/std\"
 CXXFLAGS := -std=$(CXX_STANDARD) -Wall -Wextra -Wpedantic -I$(INCLUDE_DIR)
 DEBUG_FLAGS := -g -O0
 RELEASE_FLAGS := -O2
@@ -38,7 +41,17 @@ $(TARGET): $(OBJECTS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MMD -MP -c $< -o $@
+
+install: release
+		install -d $(DESTDIR)$(PREFIX)/bin
+		install -d $(DESTDIR)$(PREFIX)/share/lum/std
+		install -m 755 $(TARGET) $(DESTDIR)$(PREFIX)/bin/$(PROJECT_NAME)
+	cp -R std/* $(DESTDIR)$(PREFIX)/share/lum/std
+
+uninstall:
+		rm -f $(DESTDIR)$(PREFIX)/bin/$(PROJECT_NAME)
+		rm -rf $(DESTDIR)$(PREFIX)/share/lum
 
 dirs:
 	@mkdir -p $(OBJ_DIR)

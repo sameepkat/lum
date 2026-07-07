@@ -234,7 +234,23 @@ namespace lum {
         lum::Error::throw_and_return("array index must be number", expr.right_bracket.line, expr.right_bracket.column);   
       }
 
-    } else {
+    } else if (target.isString()) {
+      auto index = evaluate(*expr.index);
+      if (!index.isNumber())
+        lum::Error::throw_and_return("array index must be number", expr.right_bracket.line, expr.right_bracket.column);
+      double d = index.asNumber();
+      if(!(std::isfinite(d) && std::trunc(d) == d))
+        lum::Error::throw_and_return("index must be whole number ",
+                                     expr.right_bracket.line,
+                                     expr.right_bracket.column);
+      long long exact_index = static_cast<long long>(d);
+      //if (!(exact_index < target.asString()->size() && exact_index >= 0))
+      if(!(exact_index < (target.asString()).size()) && exact_index >= 0)
+        lum::Error::throw_and_return("can't access out of bound elements", expr.right_bracket.line, expr.right_bracket.column);   
+
+      std::string target_str = target.asString();
+      val = Value(std::string(1, target_str[exact_index]));
+    }else {
       lum::Error::throw_and_return("can't index into non-array data type ",  expr.right_bracket.line, expr.right_bracket.column);
     }
     this->evaluated_value = val;
