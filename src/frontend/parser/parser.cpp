@@ -474,12 +474,15 @@ namespace lum{
 
 
   std::unique_ptr<Expr> Parser::parseArray() {
-          auto array = std::make_unique<ArrayExpr>();
+        auto array = std::make_unique<ArrayExpr>();
 
+        skipNewLines();
         while(!check(TokenType::RightBracket) && !isTokEOF()){
           array->array_elements.push_back(parseExpression());
           if(!match(TokenType::Comma)) break;
+          skipNewLines();
         }
+        skipNewLines();
         array->bracket =
             consume(TokenType::RightBracket, "expect ']' after array elements.");
 
@@ -490,6 +493,7 @@ namespace lum{
       auto object = std::make_unique<ObjectExpr>();
       object->starting_brace = previousToken();
 
+      skipNewLines();
       while (!check(TokenType::RightBrace) && !isTokEOF()) {
         ObjectField new_field;
         new_field.key = consume(TokenType::Identifier, "expected key of the object");
