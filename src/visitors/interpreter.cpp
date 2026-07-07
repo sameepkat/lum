@@ -73,8 +73,13 @@ namespace lum {
 
         switch(expr.bin_operator.type){
             case lum::TokenType::Plus:
-                if(!left.isNumber() || !right.isNumber()) lum::Error::throw_and_return("invalid operands for +", expr.bin_operator.line, expr.bin_operator.column);
+              if (left.isNumber() && right.isNumber()) {
                 this->evaluated_value = Value(left.asNumber() + right.asNumber());
+              } else if (left.isString() && right.isString()){
+                this->evaluated_value = Value(left.asString() + right.asString());
+              } else {
+                    lum::Error::throw_and_return("invalid operands for +", expr.bin_operator.line, expr.bin_operator.column);
+                  }
                 break;
             case lum::TokenType::Minus:
                 if(!left.isNumber() || !right.isNumber()) lum::Error::throw_and_return("invalid operands for -", expr.bin_operator.line, expr.bin_operator.column);
