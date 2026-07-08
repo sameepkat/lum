@@ -144,7 +144,7 @@ namespace lum {
     void Interpreter::visitUnaryExpr(UnaryExpr& expr) {
         Value right = evaluate(*expr.right_expression);
         switch(expr.unary_operator.type){
-            case lum::TokenType::Bang:
+            case lum::TokenType::LogicalNOT:
                 if(right.isTruthy()) this->evaluated_value = Value(false);
                 else this->evaluated_value = Value(true);
                 break;

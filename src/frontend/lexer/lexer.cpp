@@ -18,6 +18,7 @@ namespace lum{
         {"false", TokenType::False},
         {"and", TokenType::LogicalAND},
         {"or", TokenType::LogicalOR},
+        {"not", TokenType::LogicalNOT},
         {"nil", TokenType::Nil},
         {"use", TokenType::Use},
     };
@@ -141,8 +142,12 @@ namespace lum{
             case '=':
                 addToken(match('=') ? TokenType::EqualEqual : TokenType::Equal);
                 break;
-            case '!':
-                addToken(match('=') ? TokenType::BangEqual : TokenType::Bang);
+            case '!':           
+              //addToken(match('=') ? TokenType::BangEqual : TokenType::Bang); 
+              if(match('='))
+                addToken(TokenType::BangEqual);
+              else
+                lum::Error::throw_err("Expected = after !", line, column);
                 break;
             case '>':
                 addToken(match('=') ? TokenType::GreaterEqual : TokenType::Greater);

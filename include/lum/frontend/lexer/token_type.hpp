@@ -20,7 +20,6 @@ enum class TokenType {
   // Comparison
   Equal,
   EqualEqual,
-  Bang,
   BangEqual,
   Greater,
   GreaterEqual,
@@ -30,6 +29,7 @@ enum class TokenType {
   // Logical
   LogicalOR,
   LogicalAND,
+  LogicalNOT,
 
   // Pipeline
   Arrow, // ->

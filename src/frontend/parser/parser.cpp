@@ -308,7 +308,7 @@ namespace lum{
     }
 
     std::unique_ptr<Expr> Parser::parseUnary(){
-        if(match(TokenType::Bang) || match(TokenType::Minus)){
+        if(match(TokenType::LogicalNOT) || match(TokenType::Minus)){
             Token symbol = previousToken();
             auto right = parseUnary();
 
