@@ -6,3 +6,11 @@ fn string(val){
 fn number(val){
    return __to_number(val)
 }
+
+fn ord(val){
+   return __to_ord(val)
+}
+
+fn chr(val){
+   return __to_chr(val)
+}

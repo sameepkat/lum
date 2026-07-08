@@ -23,4 +23,23 @@ lum::Value __to_string(lum::Interpreter &interpreter, const std::vector<lum::Val
     return val;
   }
 
+  lum::Value __to_ord(lum::Interpreter &interpreter,
+                      const std::vector<lum::Value> &args) {
+    std::string s = args[0].asString();
+    if (s.size() != 1)
+      lum::Error::throw_msg("string length must be equal to 1 for ord function");
+    double num = static_cast<unsigned char>(s[0]);
+
+    return Value(num);
+  }
+
+  lum::Value __to_chr(lum::Interpreter &interpreter,
+                      const std::vector<lum::Value> &args) {
+    double num = args[0].asNumber();
+    int number = static_cast<int>(num);
+    
+    char ascii = static_cast<char>(number);
+    return Value(std::string(1, ascii));
+  }
+
 }

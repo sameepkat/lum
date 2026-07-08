@@ -43,6 +43,8 @@ namespace lum {
       std::shared_ptr<NativeFunction> flush_func = std::make_shared<NativeFunction>(NativeFunction("__flush", 0, __flush));
       std::shared_ptr<NativeFunction> string_func = std::make_shared<NativeFunction>(NativeFunction("__to_string", 1, __to_string));
       std::shared_ptr<NativeFunction> number_func = std::make_shared<NativeFunction>(NativeFunction("__to_number", 1, __to_number));
+      std::shared_ptr<NativeFunction> ord_func = std::make_shared<NativeFunction>(NativeFunction("__to_ord", 1, __to_ord));
+      std::shared_ptr<NativeFunction> chr_func = std::make_shared<NativeFunction>(NativeFunction("__to_chr", 1, __to_chr));
 
 
       globals->define("__emit", Value(native_emit));
@@ -63,5 +65,7 @@ namespace lum {
       globals->define("__flush", Value(flush_func));
       globals->define("__to_string", Value(string_func));
       globals->define("__to_number", Value(number_func));
+      globals->define("__to_ord", Value(ord_func));
+      globals->define("__to_chr", Value(chr_func));
     }
 }
