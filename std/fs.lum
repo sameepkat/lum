@@ -1,0 +1,12 @@
+
+fn read_file(path){
+   return __read_file(path)
+}
+
+fn write_file(path, content){
+   return __write_file(path, content)
+}
+
+fn append_file(path, content){
+   return __append_file(path, content)
+}

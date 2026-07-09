@@ -1,6 +1,5 @@
 #pragma once
 
-#include "lum/frontend/ast/expr.hpp"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -38,9 +37,11 @@ namespace lum{
             std::string toString() const;
             bool isTruthy() const;
             bool equals(const Value& other) const;
+            std::string lum_typeof() const;
 
             bool isNumber() const;
             double asNumber() const;
+            long long asInt() const;
             bool isString() const;
             std::string asString() const;
             bool isBool() const;
@@ -57,8 +58,8 @@ namespace lum{
             std::shared_ptr<LumFunction> asLumFunction() const;
             std::shared_ptr<NativeFunction> asNativeFunction() const;
 
+            bool isInt(double) const;
         private:
             valueData data;
-            bool isInt(double) const;
     };
 }

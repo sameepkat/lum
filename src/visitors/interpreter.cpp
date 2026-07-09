@@ -109,24 +109,38 @@ namespace lum {
                 this->evaluated_value = Value(static_cast<double>(lhs % rhs));
                 break;}
             case lum::TokenType::Greater:
-                if(!left.isNumber() || !right.isNumber()) lum::Error::throw_and_return("invalid operands for >", expr.bin_operator.line, expr.bin_operator.column);
+              if((!left.isNumber() || !right.isNumber()) && (!left.isString() || !right.isString())) lum::Error::throw_and_return("invalid operands for >", expr.bin_operator.line, expr.bin_operator.column);
+              if (left.isNumber() && right.isNumber()) {
                 if(left.asNumber() > right.asNumber()) this->evaluated_value = Value(true);
                 else this->evaluated_value = Value(false);
+              } else if (left.isString() && right.isString()) {
+                if(left.asString() > right.asString()) this->evaluated_value = Value(true);
+                else this->evaluated_value = Value(false);
+              } 
                 break;
             case lum::TokenType::GreaterEqual:
-                if(!left.isNumber() || !right.isNumber()) lum::Error::throw_and_return("invalid operands for >=", expr.bin_operator.line, expr.bin_operator.column);
-                if(left.asNumber() >= right.asNumber()) this->evaluated_value = Value(true);
-                else this->evaluated_value = Value(false);
+              if (left.isNumber() && right.isNumber()) {
+                this->evaluated_value = Value(left.asNumber() >= right.asNumber());
+              } else if (left.isString() && right.isString()) {
+                this->evaluated_value =
+                    Value(left.asString() >= right.asString());
+              }
+              else lum::Error::throw_and_return("invalid operands for >=", expr.bin_operator.line, expr.bin_operator.column);
                 break;
             case lum::TokenType::Less:
-                if(!left.isNumber() || !right.isNumber()) lum::Error::throw_and_return("invalid operands for <", expr.bin_operator.line, expr.bin_operator.column);
-                if(left.asNumber() < right.asNumber()) this->evaluated_value = Value(true);
-                else this->evaluated_value = Value(false);
+                if (left.isNumber() && right.isNumber())
+                  this->evaluated_value = Value(left.asNumber() < right.asNumber());
+                else if (left.isString() && right.isString())
+                  this->evaluated_value = Value(left.asString() < right.asString());
+                else lum::Error::throw_and_return("invalid operands for <", expr.bin_operator.line, expr.bin_operator.column);
                 break;
             case lum::TokenType::LessEqual:
-                if(!left.isNumber() || !right.isNumber()) lum::Error::throw_and_return("invalid operands for <=", expr.bin_operator.line, expr.bin_operator.column);
-                if(left.asNumber() <= right.asNumber()) this->evaluated_value = Value(true);
-                else this->evaluated_value = Value(false);
+                if (left.isNumber() && right.isNumber())
+                  this->evaluated_value = Value(left.asNumber() <= right.asNumber());
+                else if (left.isString() && right.isString())
+                  this->evaluated_value =
+                      Value(left.asString() <= right.asString());
+                else lum::Error::throw_and_return("invalid operands for <=", expr.bin_operator.line, expr.bin_operator.column);
                 break;
             case lum::TokenType::EqualEqual:
                 if(left.equals(right)) this->evaluated_value = Value(true);

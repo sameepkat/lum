@@ -7,7 +7,11 @@
 #include "lum/stdlib/time_lib.hpp"
 #include "lum/stdlib/terminal_lib.hpp"
 #include "lum/stdlib/string_lib.hpp"
-#include <memory>
+#include "lum/stdlib/fs_lib.hpp"
+#include "lum/visitors/interpreter.hpp"
+#include "lum/visitors/interpreter.hpp"
+#include "lum/runtime/value.hpp"
+#include <vector>
 
 namespace lum {
     Value __emit(Interpreter &interpreter, const std::vector<Value> &args) {
@@ -23,6 +27,11 @@ namespace lum {
       return Value();
     }
 
+    Value __lum_typeof(Interpreter &interpreter, const std::vector<Value> &args) {
+      if (args.size() != 1) lum::Error::throw_internal("expected 1 argument. found " + std::to_string(args.size()));
+      std::string type_string = args[0].lum_typeof();
+      return Value(type_string);
+    }
 
     void installCoreLib(std::shared_ptr<Environment> globals) {
       std::shared_ptr<NativeFunction> native_emit = std::make_shared<NativeFunction>(NativeFunction("__emit", 3, __emit));
@@ -45,6 +54,14 @@ namespace lum {
       std::shared_ptr<NativeFunction> number_func = std::make_shared<NativeFunction>(NativeFunction("__to_number", 1, __to_number));
       std::shared_ptr<NativeFunction> ord_func = std::make_shared<NativeFunction>(NativeFunction("__to_ord", 1, __to_ord));
       std::shared_ptr<NativeFunction> chr_func = std::make_shared<NativeFunction>(NativeFunction("__to_chr", 1, __to_chr));
+      std::shared_ptr<NativeFunction> substr_func = std::make_shared<NativeFunction>(NativeFunction("__substr", 3, __substr));
+      std::shared_ptr<NativeFunction> split_func = std::make_shared<NativeFunction>(NativeFunction("__split", 2, __split));
+      std::shared_ptr<NativeFunction> join_func = std::make_shared<NativeFunction>(NativeFunction("__join", 2, __join));
+      std::shared_ptr<NativeFunction> index_of_func = std::make_shared<NativeFunction>(NativeFunction("__index_of", 2, __index_of));
+      std::shared_ptr<NativeFunction> type_func = std::make_shared<NativeFunction>(NativeFunction("type", 1, __lum_typeof));
+      std::shared_ptr<NativeFunction> read_file_func = std::make_shared<NativeFunction>(NativeFunction("__read_file", 1, __read_file));
+      std::shared_ptr<NativeFunction> write_file_func = std::make_shared<NativeFunction>(NativeFunction("__write_file", 2, __write_file));
+      std::shared_ptr<NativeFunction> append_file_func = std::make_shared<NativeFunction>(NativeFunction("__append_file", 2, __append_file));
 
 
       globals->define("__emit", Value(native_emit));
@@ -67,5 +84,13 @@ namespace lum {
       globals->define("__to_number", Value(number_func));
       globals->define("__to_ord", Value(ord_func));
       globals->define("__to_chr", Value(chr_func));
+      globals->define("__substr", Value(substr_func));
+      globals->define("__split", Value(split_func));
+      globals->define("__join", Value(join_func));
+      globals->define("__index_of", Value(index_of_func));
+      globals->define("type", Value(type_func));
+      globals->define("__read_file", Value(read_file_func));
+      globals->define("__write_file", Value(write_file_func));
+      globals->define("__append_file", Value(append_file_func));
     }
 }

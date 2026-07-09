@@ -36,7 +36,7 @@ namespace lum{
 
         void scanToken();
         void addToken(TokenType type);
-        void addStrToken();
+        void addStrToken(const std::string& text);
 
         void identifier();
         void number();

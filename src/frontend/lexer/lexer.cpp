@@ -193,8 +193,8 @@ namespace lum{
         });
     }
 
-    void Lexer::addStrToken(){
-        std::string text = source.substr(start+1, current - start-2);
+  void Lexer::addStrToken(const std::string& text){
+    //std::string text = source.substr(start+1, current - start-2);
 
         tokens.push_back(Token{
             TokenType::String,
@@ -240,16 +240,41 @@ namespace lum{
     }
 
     void Lexer::string() {
+       std::string value;
        while(peek() != '"' && !isAtEnd()) {
-           advance();
+        char c = advance();
+
+        if (c == '\\') {
+            if (isAtEnd()) {
+            Error::throw_and_return("unterminated escape sequence", line, column);
+            }
+
+            char esc = advance();
+
+            switch (esc) {
+                case 'n': value += '\n'; break;
+                case 't': value += '\t'; break;
+                case '"': value += '"'; break;
+                case '\\': value += '\\'; break;
+                case 'r': value += '\r'; break;
+                default:
+            Error::throw_and_return(std::string("unknown escape escape: \\") + esc,
+                                line, column);
+            }
+        } else {
+          if (c == '\n') {
+            lum::Error::throw_and_return("newline in string; use \\n", line, column);
+          }
+
+          value += c;
+        }
        }
 
        if(isAtEnd()){
            lum::Error::throw_err("Unterminated String", line, column);
        }
-
        advance();
 
-       addStrToken();
+       addStrToken(value);
     }
 }

@@ -8,6 +8,7 @@
 #include "lum/runtime/value.hpp"
 #include "lum/runtime/function.hpp"
 #include "lum/runtime/native_function.hpp"
+#include "lum/error/error.hpp"
 
 namespace lum{
 
@@ -20,7 +21,7 @@ namespace lum{
         Value::Value(std::shared_ptr<NativeFunction> value): data(std::move(value)){}
         Value::Value(std::shared_ptr<std::vector<Value>> value): data(std::move(value)){}
         Value::Value(std::shared_ptr<std::unordered_map<std::string, Value>> value): data(std::move(value)){}
-  
+
 
 
         std::string Value::toString() const{
@@ -107,6 +108,17 @@ namespace lum{
             return false;
         }
 
+        std::string Value::lum_typeof() const{
+          if(isString()) return "string";
+          if(isBool()) return "bool";
+          if(isObject()) return "object";
+          if(isArray()) return "array";
+          if(isNumber()) return "number";
+          if(isLumFunction()) return "function";
+          if(isNativeFunction()) return "native_function";
+          return "unknown";
+        }
+
         bool Value::isNumber() const{
             return std::holds_alternative<double>(data);
         }
@@ -122,7 +134,7 @@ namespace lum{
         bool Value::isLumFunction() const{
                 return std::holds_alternative<std::shared_ptr<LumFunction>>(data);
         }
-          
+
         bool Value::isNativeFunction() const{
                 return std::holds_alternative<std::shared_ptr<NativeFunction>>(data);
             }
@@ -137,6 +149,14 @@ namespace lum{
           return std::isfinite(d) && std::trunc(d) == d;
         }
 
+        long long Value::asInt() const {
+          double d = std::get<double>(data);
+          if (!isInt(d))
+            lum::Error::throw_msg("expected whole number");
+          return static_cast<long long>(d);
+        }
+
+
         bool Value::isBool() const {
             return std::holds_alternative<bool>(data);
         }
@@ -148,7 +168,7 @@ namespace lum{
           return isLumFunction() || isNativeFunction();
         }
         bool Value::isArray() const {
-          
+
           return std::holds_alternative<std::shared_ptr<std::vector<Value>>>(data);
         }
         std::shared_ptr<std::vector<Value>> Value::asArray() const {

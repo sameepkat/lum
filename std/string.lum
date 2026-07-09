@@ -14,3 +14,19 @@ fn ord(val){
 fn chr(val){
    return __to_chr(val)
 }
+
+fn substr(str, start, len){
+   return __substr(str, start, len)
+}
+
+fn split(str, delimiter){
+   return __split(str, delimiter)
+}
+
+fn join(arr, delimiter){
+   return __join(arr, delimiter) 
+}
+
+fn index_of(str, sub){
+   return __index_of(str, sub)
+}

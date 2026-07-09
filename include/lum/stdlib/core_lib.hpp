@@ -7,6 +7,7 @@ namespace lum {
     Value print_func(Interpreter &interpreter, const std::vector<Value> &args);
     Value __emit(Interpreter &interpreter, const std::vector<Value> &args);
     Value __input(Interpreter &interpreter, const std::vector<Value> &args);
+    Value __lum_typeof(Interpreter &interpreter, const std::vector<Value> &args);
 
     void installCoreLib(std::shared_ptr<Environment> globals);
 }
