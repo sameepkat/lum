@@ -9,4 +9,5 @@ namespace lum {
   Value __tan(Interpreter &interpreter, const std::vector<Value> &args);
   Value __floor(Interpreter &interpreter, const std::vector<Value> &args);
   Value __ceil(Interpreter &interpreter, const std::vector<Value> &args);
+  Value __sqrt(Interpreter &interpreter, const std::vector<Value> &args);
 }

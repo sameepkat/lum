@@ -17,3 +17,7 @@ fn floor(num){
 fn ceil(num){
    return __ceil(num)
 }
+
+fn sqrt(num){
+   return __sqrt(num)
+}

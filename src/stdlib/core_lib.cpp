@@ -33,6 +33,11 @@ namespace lum {
       return Value(type_string);
     }
 
+    Value __hasKey(Interpreter &interpreter, const std::vector<Value> &args) {
+      auto key = args[1].asString();
+      return Value(args[0].hasKey(key));
+    }
+
     void installCoreLib(std::shared_ptr<Environment> globals) {
       std::shared_ptr<NativeFunction> native_emit = std::make_shared<NativeFunction>(NativeFunction("__emit", 3, __emit));
       std::shared_ptr<NativeFunction> len_func = std::make_shared<NativeFunction>(NativeFunction("__len", 1, __len));
@@ -62,6 +67,8 @@ namespace lum {
       std::shared_ptr<NativeFunction> read_file_func = std::make_shared<NativeFunction>(NativeFunction("__read_file", 1, __read_file));
       std::shared_ptr<NativeFunction> write_file_func = std::make_shared<NativeFunction>(NativeFunction("__write_file", 2, __write_file));
       std::shared_ptr<NativeFunction> append_file_func = std::make_shared<NativeFunction>(NativeFunction("__append_file", 2, __append_file));
+      std::shared_ptr<NativeFunction> haskey_func = std::make_shared<NativeFunction>(NativeFunction("has_key", 2, __hasKey));
+      std::shared_ptr<NativeFunction> sqrt_func = std::make_shared<NativeFunction>(NativeFunction("sqrt", 1, __sqrt));
 
 
       globals->define("__emit", Value(native_emit));
@@ -92,5 +99,7 @@ namespace lum {
       globals->define("__read_file", Value(read_file_func));
       globals->define("__write_file", Value(write_file_func));
       globals->define("__append_file", Value(append_file_func));
+      globals->define("has_key", Value(haskey_func));
+      globals->define("__sqrt", Value(sqrt_func));
     }
 }

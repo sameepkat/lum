@@ -49,6 +49,7 @@ namespace lum{
             bool isArray() const;
             std::shared_ptr<std::vector<Value>> asArray() const;
             bool isObject() const;
+            bool hasKey(std::string ) const;
             std::shared_ptr<std::unordered_map<std::string, Value>> asObject() const;
 
             bool isCallable() const;

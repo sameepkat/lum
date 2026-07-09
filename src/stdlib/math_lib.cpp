@@ -47,4 +47,13 @@ namespace lum {
 
     return Value(ceil(val));
  }
+
+ Value __sqrt(Interpreter &interpreter, const std::vector<Value> &args) {
+   if(!(args.size() == 1))
+     lum::Error::throw_internal("expected 1 argument. found " + std::to_string(args.size()));
+
+   double val = args[0].asNumber();
+
+   return Value(sqrt(val));
+ }
 }

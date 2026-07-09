@@ -156,6 +156,15 @@ namespace lum{
           return static_cast<long long>(d);
         }
 
+        bool Value::hasKey(std::string key) const {
+          std::shared_ptr<std::unordered_map<std::string, Value>> obj = asObject();
+          if (obj->contains(key)) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+
 
         bool Value::isBool() const {
             return std::holds_alternative<bool>(data);
